@@ -12,7 +12,7 @@ export type Student = {
   latitude?: number;
   longitude?: number;
   stage: Types.ObjectId;
-  qrCode?: string;
+  qrCode: string;
   internalStudentCode: string;
   status: StudentStatus;
   isDeleted: boolean;
@@ -72,9 +72,10 @@ const studentSchema = new Schema<Student, StudentModelType>(
     },
     qrCode: {
       type: String,
+      required: true,
       trim: true,
       unique: true,
-      sparse: true
+      index: true
     },
     internalStudentCode: {
       type: String,
@@ -110,6 +111,6 @@ const studentSchema = new Schema<Student, StudentModelType>(
 studentSchema.index({ fullName: 'text', phoneNumber: 'text', internalStudentCode: 'text' });
 studentSchema.index({ stage: 1, status: 1, isDeleted: 1 });
 studentSchema.index({ internalStudentCode: 1 }, { unique: true });
-studentSchema.index({ qrCode: 1 }, { unique: true, sparse: true });
+studentSchema.index({ qrCode: 1 }, { unique: true });
 
 export const StudentModel = model<Student, StudentModelType>('Student', studentSchema);

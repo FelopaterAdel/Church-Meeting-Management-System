@@ -17,8 +17,6 @@ const internalStudentCodeSchema = z
   .regex(/^[a-zA-Z0-9_-]+$/, 'Internal student code can only contain letters, numbers, underscores, and hyphens')
   .transform((value) => value.toUpperCase());
 
-const qrCodeSchema = z.string().trim().min(1).max(250).optional();
-
 export const listStudentsSchema = z.object({
   query: paginationQuerySchema.extend({
     stageId: objectIdSchema.optional(),
@@ -35,7 +33,6 @@ export const createStudentSchema = z.object({
     latitude: z.coerce.number().min(-90).max(90).optional(),
     longitude: z.coerce.number().min(-180).max(180).optional(),
     stageId: objectIdSchema,
-    qrCode: qrCodeSchema,
     internalStudentCode: internalStudentCodeSchema,
     status: z.enum(STUDENT_STATUSES).default('ACTIVE')
   })
@@ -52,7 +49,6 @@ export const updateStudentSchema = z.object({
       latitude: z.coerce.number().min(-90).max(90).optional(),
       longitude: z.coerce.number().min(-180).max(180).optional(),
       stageId: objectIdSchema.optional(),
-      qrCode: qrCodeSchema,
       internalStudentCode: internalStudentCodeSchema.optional(),
       status: z.enum(STUDENT_STATUSES).optional()
     })
@@ -63,6 +59,12 @@ export const updateStudentSchema = z.object({
 
 export const studentIdParamSchema = z.object({
   params: idParamSchema
+});
+
+export const studentQrCodeParamSchema = z.object({
+  params: z.object({
+    qrCode: z.string().trim().min(1).max(250)
+  })
 });
 
 export type ListStudentsQuery = z.infer<typeof listStudentsSchema>['query'];

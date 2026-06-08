@@ -37,6 +37,26 @@ export const getStudentById = async (req: Request, res: Response): Promise<void>
   });
 };
 
+export const getStudentQrData = async (req: Request, res: Response): Promise<void> => {
+  const qrData = await studentService.getStudentQrData(getStudentId(req));
+
+  sendSuccess(res, {
+    statusCode: StatusCodes.OK,
+    message: 'Student QR data retrieved successfully',
+    data: { qrData }
+  });
+};
+
+export const resolveStudentByQrCode = async (req: Request, res: Response): Promise<void> => {
+  const qrData = await studentService.resolveStudentByQrCode(req.params.qrCode as string);
+
+  sendSuccess(res, {
+    statusCode: StatusCodes.OK,
+    message: 'Student QR code resolved successfully',
+    data: { qrData }
+  });
+};
+
 export const createStudent = async (req: Request, res: Response): Promise<void> => {
   const student = await studentService.createStudent(req.body as CreateStudentInput);
 

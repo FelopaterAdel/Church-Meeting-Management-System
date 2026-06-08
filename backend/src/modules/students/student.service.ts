@@ -1,6 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
 import { Types, type FilterQuery } from 'mongoose';
 import { AppError } from '../../utils/app-error.util.js';
+import { generateStudentQrValue } from '../../utils/qr-code.util.js';
 import { StageModel } from '../stages/stage.model.js';
 import { StudentModel, type Student, type StudentDocument } from './student.model.js';
 import type { CreateStudentInput, ListStudentsQuery, UpdateStudentInput } from './student.validation.js';
@@ -23,7 +24,7 @@ export type PublicStudent = {
   latitude?: number;
   longitude?: number;
   stageId: string;
-  qrCode?: string;
+  qrCode: string;
   internalStudentCode: string;
   status: Student['status'];
   createdAt: Date;
@@ -33,6 +34,15 @@ export type PublicStudent = {
 type PaginatedStudents = {
   students: PublicStudent[];
   pagination: PaginationMeta;
+};
+
+export type StudentQrData = {
+  studentId: string;
+  internalStudentCode: string;
+  fullName: string;
+  stageId: string;
+  status: Student['status'];
+  qrCode: string;
 };
 
 const escapeRegex = (value: string): string => {
@@ -47,6 +57,7 @@ const toPublicStudent = (student: StudentDocument): PublicStudent => {
     confessionFather: student.confessionFather,
     address: student.address,
     stageId: student.stage.toString(),
+    qrCode: student.qrCode,
     internalStudentCode: student.internalStudentCode,
     status: student.status,
     createdAt: student.createdAt,
@@ -61,12 +72,17 @@ const toPublicStudent = (student: StudentDocument): PublicStudent => {
     publicStudent.longitude = student.longitude;
   }
 
-  if (student.qrCode) {
-    publicStudent.qrCode = student.qrCode;
-  }
-
   return publicStudent;
 };
+
+const toStudentQrData = (student: StudentDocument): StudentQrData => ({
+  studentId: student.id,
+  internalStudentCode: student.internalStudentCode,
+  fullName: student.fullName,
+  stageId: student.stage.toString(),
+  status: student.status,
+  qrCode: student.qrCode
+});
 
 const assertStageExists = async (stageId: string): Promise<void> => {
   const stageExists = await StageModel.exists({ _id: stageId, isActive: true });
@@ -76,30 +92,28 @@ const assertStageExists = async (stageId: string): Promise<void> => {
   }
 };
 
-const assertStudentIdentifiersAreAvailable = async (
-  input: Pick<CreateStudentInput, 'internalStudentCode' | 'qrCode'>,
-  excludeStudentId?: string
-): Promise<void> => {
-  const orConditions: FilterQuery<Student>[] = [{ internalStudentCode: input.internalStudentCode }];
-
-  if (input.qrCode) {
-    orConditions.push({ qrCode: input.qrCode });
-  }
-
+const assertStudentCodeIsAvailable = async (internalStudentCode: string, excludeStudentId?: string): Promise<void> => {
   const existingStudent = await StudentModel.findOne({
-    $or: orConditions,
+    internalStudentCode,
     ...(excludeStudentId ? { _id: { $ne: excludeStudentId } } : {})
   });
 
-  if (!existingStudent) {
-    return;
-  }
-
-  if (existingStudent.internalStudentCode === input.internalStudentCode) {
+  if (existingStudent) {
     throw new AppError('Internal student code already exists', StatusCodes.CONFLICT);
   }
+};
 
-  throw new AppError('QR code already exists', StatusCodes.CONFLICT);
+const generateUniqueStudentQrCode = async (): Promise<string> => {
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const qrCode = generateStudentQrValue();
+    const existingStudent = await StudentModel.exists({ qrCode });
+
+    if (!existingStudent) {
+      return qrCode;
+    }
+  }
+
+  throw new AppError('Unable to generate a unique student QR code', StatusCodes.INTERNAL_SERVER_ERROR);
 };
 
 const buildStudentFilter = (query: ListStudentsQuery): FilterQuery<Student> => {
@@ -168,7 +182,9 @@ export const getStudentById = async (studentId: string): Promise<PublicStudent> 
 
 export const createStudent = async (input: CreateStudentInput): Promise<PublicStudent> => {
   await assertStageExists(input.stageId);
-  await assertStudentIdentifiersAreAvailable(input);
+  await assertStudentCodeIsAvailable(input.internalStudentCode);
+
+  const qrCode = await generateUniqueStudentQrCode();
 
   const student = await StudentModel.create({
     fullName: input.fullName,
@@ -178,7 +194,7 @@ export const createStudent = async (input: CreateStudentInput): Promise<PublicSt
     latitude: input.latitude,
     longitude: input.longitude,
     stage: input.stageId,
-    qrCode: input.qrCode ?? `STUDENT:${input.internalStudentCode}`,
+    qrCode,
     internalStudentCode: input.internalStudentCode,
     status: input.status
   });
@@ -194,15 +210,7 @@ export const updateStudent = async (studentId: string, input: UpdateStudentInput
   }
 
   const nextInternalStudentCode = input.internalStudentCode ?? student.internalStudentCode;
-  const nextQrCode = input.qrCode ?? student.qrCode;
-
-  await assertStudentIdentifiersAreAvailable(
-    {
-      internalStudentCode: nextInternalStudentCode,
-      qrCode: nextQrCode
-    },
-    studentId
-  );
+  await assertStudentCodeIsAvailable(nextInternalStudentCode, studentId);
 
   if (input.stageId) {
     await assertStageExists(input.stageId);
@@ -233,10 +241,6 @@ export const updateStudent = async (studentId: string, input: UpdateStudentInput
     student.longitude = input.longitude;
   }
 
-  if (input.qrCode !== undefined) {
-    student.qrCode = input.qrCode;
-  }
-
   if (input.internalStudentCode !== undefined) {
     student.internalStudentCode = input.internalStudentCode;
   }
@@ -248,6 +252,26 @@ export const updateStudent = async (studentId: string, input: UpdateStudentInput
   await student.save();
 
   return toPublicStudent(student);
+};
+
+export const getStudentQrData = async (studentId: string): Promise<StudentQrData> => {
+  const student = await StudentModel.findOne({ _id: studentId, isDeleted: false });
+
+  if (!student) {
+    throw new AppError('Student was not found', StatusCodes.NOT_FOUND);
+  }
+
+  return toStudentQrData(student);
+};
+
+export const resolveStudentByQrCode = async (qrCode: string): Promise<StudentQrData> => {
+  const student = await StudentModel.findOne({ qrCode, isDeleted: false });
+
+  if (!student) {
+    throw new AppError('Student QR code was not found', StatusCodes.NOT_FOUND);
+  }
+
+  return toStudentQrData(student);
 };
 
 export const softDeleteStudent = async (studentId: string): Promise<void> => {
