@@ -8,6 +8,7 @@ import { env, isProduction } from './config/env.js';
 import { errorHandler, notFoundHandler } from './middleware/error.middleware.js';
 import { loggingMiddleware } from './middleware/logging.middleware.js';
 import { authRoutes } from './modules/auth/auth.routes.js';
+import { meetingRoutes } from './modules/meetings/meeting.routes.js';
 import { stageRoutes } from './modules/stages/stage.routes.js';
 import { studentRoutes } from './modules/students/student.routes.js';
 import { userRoutes } from './modules/users/user.routes.js';
@@ -53,6 +54,7 @@ export const createApp = (): Application => {
   });
 
   app.use(`${env.API_PREFIX}/auth`, authRoutes);
+  app.use(`${env.API_PREFIX}/meetings`, meetingRoutes);
   app.use(`${env.API_PREFIX}/stages`, stageRoutes);
   app.use(`${env.API_PREFIX}/students`, studentRoutes);
   app.use(`${env.API_PREFIX}/users`, userRoutes);
