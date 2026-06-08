@@ -1,7 +1,7 @@
 import { Schema, model, type HydratedDocument, type Model, type Types } from 'mongoose';
 
-export const ATTENDANCE_STATUSES = ['PRESENT'] as const;
-export const ATTENDANCE_METHODS = ['QR', 'MANUAL'] as const;
+export const ATTENDANCE_STATUSES = ['PRESENT', 'ABSENT'] as const;
+export const ATTENDANCE_METHODS = ['QR', 'MANUAL', 'SYSTEM'] as const;
 
 export type AttendanceStatus = (typeof ATTENDANCE_STATUSES)[number];
 export type AttendanceMethod = (typeof ATTENDANCE_METHODS)[number];

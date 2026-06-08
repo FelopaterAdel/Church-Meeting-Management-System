@@ -48,12 +48,15 @@ export const updateMeeting = async (req: Request, res: Response): Promise<void> 
 };
 
 export const closeMeeting = async (req: Request, res: Response): Promise<void> => {
-  const meeting = await meetingService.closeMeeting(getMeetingId(req), req.user!.id);
+  const result = await meetingService.closeMeeting(getMeetingId(req), req.user!.id);
 
   sendSuccess(res, {
     statusCode: StatusCodes.OK,
     message: 'Meeting closed successfully',
-    data: { meeting }
+    data: {
+      meeting: result.meeting,
+      absenceSummary: result.absenceSummary
+    }
   });
 };
 

@@ -1,7 +1,9 @@
 import { StatusCodes } from 'http-status-codes';
 import { Types, type FilterQuery } from 'mongoose';
 import { AppError } from '../../utils/app-error.util.js';
+import { AttendanceModel } from '../attendance/attendance.model.js';
 import { StageModel } from '../stages/stage.model.js';
+import { StudentModel } from '../students/student.model.js';
 import { MeetingModel, type Meeting, type MeetingDocument } from './meeting.model.js';
 import type { CreateMeetingInput, ListMeetingsQuery, UpdateMeetingInput } from './meeting.validation.js';
 
@@ -25,6 +27,16 @@ export type PublicMeeting = {
   closedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
+};
+
+type AbsenceGenerationSummary = {
+  eligibleStudents: number;
+  absenceRecordsCreated: number;
+};
+
+export type CloseMeetingResult = {
+  meeting: PublicMeeting;
+  absenceSummary: AbsenceGenerationSummary;
 };
 
 type PaginatedMeetings = {
@@ -166,7 +178,59 @@ export const updateMeeting = async (meetingId: string, input: UpdateMeetingInput
   return toPublicMeeting(meeting);
 };
 
-export const closeMeeting = async (meetingId: string, closedBy: string): Promise<PublicMeeting> => {
+const generateAbsencesForMeeting = async (
+  meeting: MeetingDocument,
+  recordedBy: string
+): Promise<AbsenceGenerationSummary> => {
+  const eligibleStudents = await StudentModel.find({
+    stage: meeting.stage,
+    status: 'ACTIVE',
+    isDeleted: false
+  }).select('_id');
+
+  if (eligibleStudents.length === 0) {
+    return {
+      eligibleStudents: 0,
+      absenceRecordsCreated: 0
+    };
+  }
+
+  const now = new Date();
+  const recordedById = new Types.ObjectId(recordedBy);
+  const result = await AttendanceModel.bulkWrite(
+    eligibleStudents.map((student) => ({
+      updateOne: {
+        filter: {
+          meeting: meeting._id,
+          student: student._id
+        },
+        update: {
+          $setOnInsert: {
+            meeting: meeting._id,
+            student: student._id,
+            status: 'ABSENT',
+            method: 'SYSTEM',
+            attendedAt: now,
+            recordedBy: recordedById,
+            createdAt: now,
+            updatedAt: now
+          }
+        },
+        upsert: true
+      }
+    })),
+    {
+      ordered: false
+    }
+  );
+
+  return {
+    eligibleStudents: eligibleStudents.length,
+    absenceRecordsCreated: result.upsertedCount
+  };
+};
+
+export const closeMeeting = async (meetingId: string, closedBy: string): Promise<CloseMeetingResult> => {
   const meeting = await MeetingModel.findById(meetingId);
 
   if (!meeting) {
@@ -177,12 +241,17 @@ export const closeMeeting = async (meetingId: string, closedBy: string): Promise
     throw new AppError('Meeting is already closed', StatusCodes.CONFLICT);
   }
 
+  const absenceSummary = await generateAbsencesForMeeting(meeting, closedBy);
+
   meeting.status = 'CLOSED';
   meeting.closedBy = new Types.ObjectId(closedBy);
   meeting.closedAt = new Date();
   await meeting.save();
 
-  return toPublicMeeting(meeting);
+  return {
+    meeting: toPublicMeeting(meeting),
+    absenceSummary
+  };
 };
 
 export const reopenMeeting = async (meetingId: string): Promise<PublicMeeting> => {
