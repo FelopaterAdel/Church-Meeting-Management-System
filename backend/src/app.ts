@@ -11,6 +11,7 @@ import { authRoutes } from './modules/auth/auth.routes.js';
 import { stageRoutes } from './modules/stages/stage.routes.js';
 import { studentRoutes } from './modules/students/student.routes.js';
 import { userRoutes } from './modules/users/user.routes.js';
+import { visitRoutes } from './modules/visits/visit.routes.js';
 import { sendSuccess } from './utils/response.util.js';
 
 export const createApp = (): Application => {
@@ -55,6 +56,7 @@ export const createApp = (): Application => {
   app.use(`${env.API_PREFIX}/stages`, stageRoutes);
   app.use(`${env.API_PREFIX}/students`, studentRoutes);
   app.use(`${env.API_PREFIX}/users`, userRoutes);
+  app.use(`${env.API_PREFIX}/visits`, visitRoutes);
 
   app.use(env.API_PREFIX, (_req: Request, res: Response) => {
     sendSuccess(res, {
