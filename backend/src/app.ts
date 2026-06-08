@@ -7,6 +7,7 @@ import { StatusCodes } from 'http-status-codes';
 import { env, isProduction } from './config/env.js';
 import { errorHandler, notFoundHandler } from './middleware/error.middleware.js';
 import { loggingMiddleware } from './middleware/logging.middleware.js';
+import { attendanceRoutes } from './modules/attendance/attendance.routes.js';
 import { authRoutes } from './modules/auth/auth.routes.js';
 import { meetingRoutes } from './modules/meetings/meeting.routes.js';
 import { stageRoutes } from './modules/stages/stage.routes.js';
@@ -53,6 +54,7 @@ export const createApp = (): Application => {
     });
   });
 
+  app.use(`${env.API_PREFIX}/attendance`, attendanceRoutes);
   app.use(`${env.API_PREFIX}/auth`, authRoutes);
   app.use(`${env.API_PREFIX}/meetings`, meetingRoutes);
   app.use(`${env.API_PREFIX}/stages`, stageRoutes);
