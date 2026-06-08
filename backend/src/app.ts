@@ -11,6 +11,7 @@ import { attendanceRoutes } from './modules/attendance/attendance.routes.js';
 import { authRoutes } from './modules/auth/auth.routes.js';
 import { meetingRoutes } from './modules/meetings/meeting.routes.js';
 import { stageRoutes } from './modules/stages/stage.routes.js';
+import { statisticsRoutes } from './modules/statistics/statistics.routes.js';
 import { studentRoutes } from './modules/students/student.routes.js';
 import { userRoutes } from './modules/users/user.routes.js';
 import { visitRoutes } from './modules/visits/visit.routes.js';
@@ -58,6 +59,7 @@ export const createApp = (): Application => {
   app.use(`${env.API_PREFIX}/auth`, authRoutes);
   app.use(`${env.API_PREFIX}/meetings`, meetingRoutes);
   app.use(`${env.API_PREFIX}/stages`, stageRoutes);
+  app.use(`${env.API_PREFIX}/statistics`, statisticsRoutes);
   app.use(`${env.API_PREFIX}/students`, studentRoutes);
   app.use(`${env.API_PREFIX}/users`, userRoutes);
   app.use(`${env.API_PREFIX}/visits`, visitRoutes);
