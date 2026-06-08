@@ -7,6 +7,7 @@ import { StatusCodes } from 'http-status-codes';
 import { env, isProduction } from './config/env.js';
 import { errorHandler, notFoundHandler } from './middleware/error.middleware.js';
 import { loggingMiddleware } from './middleware/logging.middleware.js';
+import { authRoutes } from './modules/auth/auth.routes.js';
 import { sendSuccess } from './utils/response.util.js';
 
 export const createApp = (): Application => {
@@ -46,6 +47,8 @@ export const createApp = (): Application => {
       }
     });
   });
+
+  app.use(`${env.API_PREFIX}/auth`, authRoutes);
 
   app.use(env.API_PREFIX, (_req: Request, res: Response) => {
     sendSuccess(res, {
