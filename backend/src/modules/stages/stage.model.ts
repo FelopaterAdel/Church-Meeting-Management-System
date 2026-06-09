@@ -51,7 +51,6 @@ const stageSchema = new Schema<Stage, StageModelType>(
   }
 );
 
-stageSchema.index({ name: 1 }, { unique: true });
 stageSchema.index({ isActive: 1, sortOrder: 1 });
 
 export const StageModel = model<Stage, StageModelType>('Stage', stageSchema);
