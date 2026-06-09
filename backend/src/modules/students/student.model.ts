@@ -110,7 +110,5 @@ const studentSchema = new Schema<Student, StudentModelType>(
 
 studentSchema.index({ fullName: 'text', phoneNumber: 'text', internalStudentCode: 'text' });
 studentSchema.index({ stage: 1, status: 1, isDeleted: 1 });
-studentSchema.index({ internalStudentCode: 1 }, { unique: true });
-studentSchema.index({ qrCode: 1 }, { unique: true });
 
 export const StudentModel = model<Student, StudentModelType>('Student', studentSchema);
