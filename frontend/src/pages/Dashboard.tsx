@@ -74,7 +74,7 @@ export const Dashboard = () => {
       ]
     : [];
 
-  const displayName = user?.name || user?.email || 'Servant';
+  const displayName = user?.fullName || user?.email || 'Servant';
 
   return (
     <MainLayout title="Dashboard">

@@ -1,9 +1,13 @@
 export interface User {
   id: string;
   email: string;
-  name: string;
-  role: 'admin' | 'user' | 'viewer';
+  fullName: string;
+  role: 'SUPER_ADMIN' | 'SERVANT';
+  status: 'PENDING' | 'APPROVED' | 'SUSPENDED' | 'REJECTED';
+  isActive: boolean;
+  lastLoginAt?: string;
   createdAt: string;
+  updatedAt: string;
 }
 
 export interface LoginRequest {
@@ -12,7 +16,7 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-  token: string;
+  accessToken: string;
   user: User;
 }
 
@@ -23,7 +27,7 @@ export interface AuthContextType {
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
-  register: (email: string, password: string, name: string) => Promise<void>;
+  register: (email: string, password: string, fullName: string) => Promise<void>;
 }
 
 export interface ApiError {

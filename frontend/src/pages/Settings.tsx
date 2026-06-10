@@ -25,7 +25,7 @@ export const Settings = () => {
           <TextField
             fullWidth
             label="Name"
-            value={user?.name || ''}
+            value={user?.fullName || ''}
             disabled
           />
 

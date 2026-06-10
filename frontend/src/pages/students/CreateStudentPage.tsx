@@ -1,13 +1,16 @@
 import { useNavigate } from 'react-router-dom';
-import { Box, Paper, Alert } from '@mui/material';
+import { Alert, Box, Paper } from '@mui/material';
 import { useCreateStudent } from '../../hooks/useStudents';
+import { useStages } from '../../hooks/useStages';
 import { StudentForm } from '../../components/students/StudentForm';
 import { PageHeader } from '../../components/common/PageHeader';
+import { LoadingState, ErrorState } from '../../components/common/StateViews';
 import type { StudentFormData } from '../../types/student';
 
 export default function CreateStudentPage() {
   const navigate = useNavigate();
   const mutation = useCreateStudent();
+  const { data: stages = [], isLoading, isError, refetch } = useStages();
 
   const handleSubmit = async (data: StudentFormData) => {
     const student = await mutation.mutateAsync(data);
@@ -32,11 +35,18 @@ export default function CreateStudentPage() {
       )}
 
       <Paper variant="outlined" sx={{ p: 3, borderRadius: 2 }}>
-        <StudentForm
-          onSubmit={handleSubmit}
-          isSubmitting={mutation.isPending}
-          submitLabel="Create Student"
-        />
+        {isLoading ? (
+          <LoadingState message="Loading stages..." />
+        ) : isError ? (
+          <ErrorState message="Failed to load stages." onRetry={refetch} />
+        ) : (
+          <StudentForm
+            stages={stages}
+            onSubmit={handleSubmit}
+            isSubmitting={mutation.isPending}
+            submitLabel="Create Student"
+          />
+        )}
       </Paper>
     </Box>
   );

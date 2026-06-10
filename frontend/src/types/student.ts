@@ -6,12 +6,14 @@ export interface Student {
   phoneNumber: string;
   confessionFather: string;
   address: string;
-  latitude: number | null;
-  longitude: number | null;
-  stage: string;
+  latitude?: number;
+  longitude?: number;
+  stageId: string;
   qrCode: string;
-  studentCode: string;
+  internalStudentCode: string;
   status: StudentStatus;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface StudentFormData {
@@ -21,32 +23,27 @@ export interface StudentFormData {
   address: string;
   latitude: number | null;
   longitude: number | null;
-  stage: string;
+  stageId: string;
+  internalStudentCode: string;
   status: StudentStatus;
 }
 
 export interface StudentsListParams {
   page: number;
-  pageSize: number;
+  limit: number;
   search?: string;
-  phoneSearch?: string;
-  stage?: string;
+  stageId?: string;
   status?: StudentStatus | '';
 }
 
-export interface PaginatedResponse<T> {
-  data: T[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
+export interface StudentsListResponse {
+  students: Student[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+  };
 }
-
-export const STAGES = [
-  'KG1', 'KG2',
-  'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6',
-  'Grade 7', 'Grade 8', 'Grade 9',
-  'Grade 10', 'Grade 11', 'Grade 12',
-  'University Year 1', 'University Year 2', 'University Year 3', 'University Year 4',
-  'Graduate',
-] as const;

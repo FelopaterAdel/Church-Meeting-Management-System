@@ -1,35 +1,25 @@
-import {
-  Box,
-  TextField,
-  MenuItem,
-  InputAdornment,
-  IconButton,
-  Tooltip,
-} from '@mui/material';
+import { Box, IconButton, InputAdornment, MenuItem, TextField, Tooltip } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import PhoneIcon from '@mui/icons-material/Phone';
 import ClearIcon from '@mui/icons-material/Clear';
-import { STAGES } from '../../types/student';
 import type { StudentStatus } from '../../types/student';
+import type { Stage } from '../../types/stage';
 
 interface StudentsFiltersProps {
   search: string;
-  phoneSearch: string;
-  stage: string;
+  stageId: string;
   status: StudentStatus | '';
-  onSearchChange: (v: string) => void;
-  onPhoneSearchChange: (v: string) => void;
-  onStageChange: (v: string) => void;
-  onStatusChange: (v: StudentStatus | '') => void;
+  stages: Stage[];
+  onSearchChange: (value: string) => void;
+  onStageChange: (value: string) => void;
+  onStatusChange: (value: StudentStatus | '') => void;
 }
 
 export const StudentsFilters = ({
   search,
-  phoneSearch,
-  stage,
+  stageId,
   status,
+  stages,
   onSearchChange,
-  onPhoneSearchChange,
   onStageChange,
   onStatusChange,
 }: StudentsFiltersProps) => (
@@ -44,13 +34,12 @@ export const StudentsFilters = ({
     borderColor="divider"
     mb={3}
   >
-    {/* Name Search */}
     <TextField
       size="small"
-      placeholder="Search by name…"
+      placeholder="Search by name, phone, code..."
       value={search}
-      onChange={(e) => onSearchChange(e.target.value)}
-      sx={{ minWidth: 200, flex: '1 1 200px' }}
+      onChange={(event) => onSearchChange(event.target.value)}
+      sx={{ minWidth: 240, flex: '1 1 240px' }}
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">
@@ -67,68 +56,41 @@ export const StudentsFilters = ({
       }}
     />
 
-    {/* Phone Search */}
-    <TextField
-      size="small"
-      placeholder="Search by phone…"
-      value={phoneSearch}
-      onChange={(e) => onPhoneSearchChange(e.target.value)}
-      sx={{ minWidth: 200, flex: '1 1 200px' }}
-      InputProps={{
-        startAdornment: (
-          <InputAdornment position="start">
-            <PhoneIcon fontSize="small" sx={{ color: 'text.disabled' }} />
-          </InputAdornment>
-        ),
-        endAdornment: phoneSearch ? (
-          <InputAdornment position="end">
-            <IconButton size="small" onClick={() => onPhoneSearchChange('')}>
-              <ClearIcon fontSize="small" />
-            </IconButton>
-          </InputAdornment>
-        ) : undefined,
-      }}
-    />
-
-    {/* Stage Filter */}
     <TextField
       select
       size="small"
       label="Stage"
-      value={stage}
-      onChange={(e) => onStageChange(e.target.value)}
-      sx={{ minWidth: 160 }}
+      value={stageId}
+      onChange={(event) => onStageChange(event.target.value)}
+      sx={{ minWidth: 180 }}
     >
       <MenuItem value="">All Stages</MenuItem>
-      {STAGES.map((s) => (
-        <MenuItem key={s} value={s}>
-          {s}
+      {stages.map((stage) => (
+        <MenuItem key={stage.id} value={stage.id}>
+          {stage.name}
         </MenuItem>
       ))}
     </TextField>
 
-    {/* Status Filter */}
     <TextField
       select
       size="small"
       label="Status"
       value={status}
-      onChange={(e) => onStatusChange(e.target.value as StudentStatus | '')}
-      sx={{ minWidth: 130 }}
+      onChange={(event) => onStatusChange(event.target.value as StudentStatus | '')}
+      sx={{ minWidth: 140 }}
     >
-      <MenuItem value="">All Status</MenuItem>
+      <MenuItem value="">All Statuses</MenuItem>
       <MenuItem value="ACTIVE">Active</MenuItem>
       <MenuItem value="INACTIVE">Inactive</MenuItem>
     </TextField>
 
-    {/* Clear All */}
-    {(search || phoneSearch || stage || status) && (
+    {(search || stageId || status) && (
       <Tooltip title="Clear all filters">
         <IconButton
           size="small"
           onClick={() => {
             onSearchChange('');
-            onPhoneSearchChange('');
             onStageChange('');
             onStatusChange('');
           }}

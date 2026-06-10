@@ -1,6 +1,7 @@
 import { AppBar, Toolbar, Typography, IconButton, Menu, MenuItem, Avatar, Box } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 interface HeaderProps {
@@ -10,7 +11,9 @@ interface HeaderProps {
 
 export const Header = ({ onMenuClick, title = 'Church Meeting Management' }: HeaderProps) => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const displayName = user?.fullName || user?.email || '';
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -23,6 +26,7 @@ export const Header = ({ onMenuClick, title = 'Church Meeting Management' }: Hea
   const handleLogout = () => {
     logout();
     handleMenuClose();
+    navigate('/login');
   };
 
   return (
@@ -44,14 +48,14 @@ export const Header = ({ onMenuClick, title = 'Church Meeting Management' }: Hea
         </Typography>
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Typography variant="body2">{user?.name}</Typography>
+          <Typography variant="body2">{displayName}</Typography>
           <IconButton
             size="small"
             onClick={handleMenuOpen}
             sx={{ p: 0 }}
           >
             <Avatar sx={{ width: 32, height: 32, bgcolor: 'secondary.main' }}>
-              {user?.name.charAt(0).toUpperCase()}
+              {displayName.charAt(0).toUpperCase()}
             </Avatar>
           </IconButton>
           <Menu

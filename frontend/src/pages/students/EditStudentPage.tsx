@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { Box, Paper, Alert } from '@mui/material';
+import { Alert, Box, Paper } from '@mui/material';
 import { useStudent, useUpdateStudent } from '../../hooks/useStudents';
+import { useStages } from '../../hooks/useStages';
 import { StudentForm } from '../../components/students/StudentForm';
 import { PageHeader } from '../../components/common/PageHeader';
 import { LoadingState, ErrorState } from '../../components/common/StateViews';
@@ -11,6 +12,7 @@ export default function EditStudentPage() {
   const navigate = useNavigate();
 
   const { data: student, isLoading, isError, refetch } = useStudent(id);
+  const { data: stages = [], isLoading: stagesLoading, isError: stagesError, refetch: refetchStages } = useStages();
   const mutation = useUpdateStudent(id);
 
   const handleSubmit = async (data: StudentFormData) => {
@@ -18,8 +20,9 @@ export default function EditStudentPage() {
     navigate(`/students/${id}`, { replace: true });
   };
 
-  if (isLoading) return <LoadingState message="Loading student data…" />;
+  if (isLoading || stagesLoading) return <LoadingState message="Loading student data..." />;
   if (isError || !student) return <ErrorState message="Failed to load student." onRetry={refetch} />;
+  if (stagesError) return <ErrorState message="Failed to load stages." onRetry={refetchStages} />;
 
   return (
     <Box>
@@ -47,14 +50,16 @@ export default function EditStudentPage() {
 
       <Paper variant="outlined" sx={{ p: 3, borderRadius: 2 }}>
         <StudentForm
+          stages={stages}
           defaultValues={{
             fullName: student.fullName,
             phoneNumber: student.phoneNumber,
             confessionFather: student.confessionFather,
             address: student.address,
-            latitude: student.latitude,
-            longitude: student.longitude,
-            stage: student.stage,
+            latitude: student.latitude ?? null,
+            longitude: student.longitude ?? null,
+            stageId: student.stageId,
+            internalStudentCode: student.internalStudentCode,
             status: student.status,
           }}
           onSubmit={handleSubmit}

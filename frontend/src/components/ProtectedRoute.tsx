@@ -1,10 +1,11 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { CircularProgress, Box } from '@mui/material';
+import type { User } from '../types';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requiredRole?: 'admin' | 'user' | 'viewer';
+  requiredRole?: User['role'];
 }
 
 export const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) => {

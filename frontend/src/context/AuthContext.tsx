@@ -36,9 +36,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(true);
     try {
       const response = await authApi.login({ email, password });
-      setToken(response.token);
+      setToken(response.accessToken);
       setUser(response.user);
-      localStorage.setItem('authToken', response.token);
+      localStorage.setItem('authToken', response.accessToken);
       localStorage.setItem('user', JSON.stringify(response.user));
     } finally {
       setIsLoading(false);
@@ -55,11 +55,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const register = async (email: string, password: string, fullName: string) => {
     setIsLoading(true);
     try {
-      const response = await authApi.register({ email, password, fullName });
-      setToken(response.token);
-      setUser(response.user);
-      localStorage.setItem('authToken', response.token);
-      localStorage.setItem('user', JSON.stringify(response.user));
+      await authApi.register({ email, password, fullName });
     } finally {
       setIsLoading(false);
     }

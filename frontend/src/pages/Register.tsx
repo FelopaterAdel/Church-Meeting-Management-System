@@ -36,7 +36,7 @@ export const Register = () => {
 
     try {
       await register(formData.email, formData.password, formData.fullName);
-      navigate('/');
+      navigate('/login');
     } catch (err) {
       const error = err as AxiosError<{ message?: string }>;
       setError(error.response?.data?.message || 'Registration failed. Please try again.');

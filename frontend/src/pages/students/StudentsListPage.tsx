@@ -30,6 +30,7 @@ import { StudentsFilters } from '../../components/students/StudentsFilters';
 import { ConfirmDialog } from '../../components/common/ConfirmDialog';
 import type { StudentStatus } from '../../types/student';
 import { useDebounce } from '../../hooks/useDebounce';
+import { useStages } from '../../hooks/useStages';
 
 const getInitials = (name: string) =>
   name
@@ -49,22 +50,21 @@ export default function StudentsListPage() {
   const navigate = useNavigate();
 
   const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
+  const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState('');
-  const [phoneSearch, setPhoneSearch] = useState('');
-  const [stage, setStage] = useState('');
+  const [stageId, setStageId] = useState('');
   const [status, setStatus] = useState<StudentStatus | ''>('');
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const debouncedSearch = useDebounce(search, 350);
-  const debouncedPhone = useDebounce(phoneSearch, 350);
+  const { data: stages = [] } = useStages();
+  const stageNameById = new Map(stages.map((stage) => [stage.id, stage.name]));
 
   const { data, isLoading, isError, refetch } = useStudents({
     page: page + 1,
-    pageSize,
+    limit,
     search: debouncedSearch || undefined,
-    phoneSearch: debouncedPhone || undefined,
-    stage: stage || undefined,
+    stageId: stageId || undefined,
     status: status || undefined,
   });
 
@@ -80,7 +80,7 @@ export default function StudentsListPage() {
     <Box>
       <PageHeader
         title="Students"
-        subtitle={data ? `${data.total} students registered` : undefined}
+        subtitle={data ? `${data.pagination.total} students registered` : undefined}
         action={
           <Button
             variant="contained"
@@ -96,12 +96,11 @@ export default function StudentsListPage() {
 
       <StudentsFilters
         search={search}
-        phoneSearch={phoneSearch}
-        stage={stage}
+        stageId={stageId}
         status={status}
+        stages={stages}
         onSearchChange={(v) => { setSearch(v); setPage(0); }}
-        onPhoneSearchChange={(v) => { setPhoneSearch(v); setPage(0); }}
-        onStageChange={(v) => { setStage(v); setPage(0); }}
+        onStageChange={(v) => { setStageId(v); setPage(0); }}
         onStatusChange={(v) => { setStatus(v); setPage(0); }}
       />
 
@@ -136,7 +135,7 @@ export default function StudentsListPage() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {data?.data.length === 0 ? (
+                {data?.students.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} align="center" sx={{ py: 6 }}>
                       <Typography variant="body2" color="text.secondary">
@@ -145,7 +144,7 @@ export default function StudentsListPage() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  data?.data.map((student) => (
+                  data?.students.map((student) => (
                     <TableRow
                       key={student.id}
                       hover
@@ -163,7 +162,7 @@ export default function StudentsListPage() {
                               bgcolor: avatarColor(student.fullName),
                             }}
                           >
-                            {getInitials(student.fullName)}
+                          {getInitials(student.fullName)}
                           </Avatar>
                           <Box>
                             <Typography variant="body2" fontWeight={600}>
@@ -182,14 +181,14 @@ export default function StudentsListPage() {
                       </TableCell>
                       <TableCell>
                         <Chip
-                          label={student.stage}
+                          label={stageNameById.get(student.stageId) ?? student.stageId}
                           size="small"
                           sx={{ borderRadius: '6px', fontWeight: 500, fontSize: '0.72rem', bgcolor: 'rgba(79,110,247,0.08)', color: '#4f6ef7' }}
                         />
                       </TableCell>
                       <TableCell>
                         <Typography variant="caption" fontFamily="monospace" color="text.secondary">
-                          {student.studentCode}
+                          {student.internalStudentCode}
                         </Typography>
                       </TableCell>
                       <TableCell>
@@ -233,13 +232,13 @@ export default function StudentsListPage() {
           {data && (
             <TablePagination
               component="div"
-              count={data.total}
+              count={data.pagination.total}
               page={page}
-              rowsPerPage={pageSize}
+              rowsPerPage={limit}
               onPageChange={(_, p) => setPage(p)}
               rowsPerPageOptions={[5, 10, 25, 50]}
               onRowsPerPageChange={(e) => {
-                setPageSize(parseInt(e.target.value, 10));
+                setLimit(parseInt(e.target.value, 10));
                 setPage(0);
               }}
               sx={{ borderTop: '1px solid', borderColor: 'divider' }}
@@ -251,7 +250,7 @@ export default function StudentsListPage() {
       <ConfirmDialog
         open={!!deleteId}
         title="Delete Student"
-        message="This action cannot be undone. The student record will be permanently removed."
+        message="The student will be removed from active student lists."
         confirmLabel="Delete"
         onConfirm={handleDelete}
         onCancel={() => setDeleteId(null)}

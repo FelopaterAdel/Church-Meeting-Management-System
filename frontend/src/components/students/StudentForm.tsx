@@ -1,19 +1,20 @@
 import {
   Box,
   Button,
+  CircularProgress,
   MenuItem,
   TextField,
   ToggleButton,
   ToggleButtonGroup,
   Typography,
-  CircularProgress,
 } from '@mui/material';
-import { useForm, Controller } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import type { StudentFormData, StudentStatus } from '../../types/student';
-import { STAGES } from '../../types/student';
+import type { Stage } from '../../types/stage';
 
 interface StudentFormProps {
   defaultValues?: Partial<StudentFormData>;
+  stages: Stage[];
   onSubmit: (data: StudentFormData) => void;
   isSubmitting: boolean;
   submitLabel?: string;
@@ -26,12 +27,14 @@ const DEFAULT: StudentFormData = {
   address: '',
   latitude: null,
   longitude: null,
-  stage: '',
+  stageId: '',
+  internalStudentCode: '',
   status: 'ACTIVE',
 };
 
 export const StudentForm = ({
   defaultValues,
+  stages,
   onSubmit,
   isSubmitting,
   submitLabel = 'Save Student',
@@ -48,7 +51,6 @@ export const StudentForm = ({
   return (
     <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' }, gap: 3 }}>
-        {/* Full Name */}
         <Box>
           <TextField
             label="Full Name"
@@ -58,12 +60,29 @@ export const StudentForm = ({
             helperText={errors.fullName?.message}
             {...register('fullName', {
               required: 'Full name is required',
-              minLength: { value: 3, message: 'Name must be at least 3 characters' },
+              minLength: { value: 2, message: 'Name must be at least 2 characters' },
             })}
           />
         </Box>
 
-        {/* Phone Number */}
+        <Box>
+          <TextField
+            label="Internal Student Code"
+            fullWidth
+            required
+            error={!!errors.internalStudentCode}
+            helperText={errors.internalStudentCode?.message}
+            {...register('internalStudentCode', {
+              required: 'Internal student code is required',
+              minLength: { value: 2, message: 'Code must be at least 2 characters' },
+              pattern: {
+                value: /^[a-zA-Z0-9_-]+$/,
+                message: 'Use only letters, numbers, underscores, and hyphens',
+              },
+            })}
+          />
+        </Box>
+
         <Box>
           <TextField
             label="Phone Number"
@@ -74,14 +93,13 @@ export const StudentForm = ({
             {...register('phoneNumber', {
               required: 'Phone number is required',
               pattern: {
-                value: /^[0-9+\-\s()]{7,20}$/,
+                value: /^[0-9+\-\s()]{7,30}$/,
                 message: 'Enter a valid phone number',
               },
             })}
           />
         </Box>
 
-        {/* Confession Father */}
         <Box>
           <TextField
             label="Confession Father"
@@ -91,14 +109,14 @@ export const StudentForm = ({
             helperText={errors.confessionFather?.message}
             {...register('confessionFather', {
               required: 'Confession father is required',
+              minLength: { value: 2, message: 'Confession father must be at least 2 characters' },
             })}
           />
         </Box>
 
-        {/* Stage */}
         <Box>
           <Controller
-            name="stage"
+            name="stageId"
             control={control}
             rules={{ required: 'Stage is required' }}
             render={({ field }) => (
@@ -107,13 +125,13 @@ export const StudentForm = ({
                 label="Stage"
                 fullWidth
                 required
-                error={!!errors.stage}
-                helperText={errors.stage?.message}
+                error={!!errors.stageId}
+                helperText={errors.stageId?.message}
                 {...field}
               >
-                {STAGES.map((s) => (
-                  <MenuItem key={s} value={s}>
-                    {s}
+                {stages.map((stage) => (
+                  <MenuItem key={stage.id} value={stage.id}>
+                    {stage.name}
                   </MenuItem>
                 ))}
               </TextField>
@@ -121,20 +139,22 @@ export const StudentForm = ({
           />
         </Box>
 
-        {/* Address */}
         <Box sx={{ gridColumn: '1 / -1' }}>
           <TextField
             label="Address"
             fullWidth
+            required
             multiline
             minRows={2}
             error={!!errors.address}
             helperText={errors.address?.message}
-            {...register('address')}
+            {...register('address', {
+              required: 'Address is required',
+              minLength: { value: 2, message: 'Address must be at least 2 characters' },
+            })}
           />
         </Box>
 
-        {/* Coordinates */}
         <Box>
           <TextField
             label="Latitude"
@@ -142,14 +162,15 @@ export const StudentForm = ({
             type="number"
             inputProps={{ step: 'any' }}
             error={!!errors.latitude}
-            helperText={errors.latitude?.message || 'Optional — GPS coordinate'}
+            helperText={errors.latitude?.message || 'Optional GPS coordinate'}
             {...register('latitude', {
-              setValueAs: (v) => (v === '' ? null : parseFloat(v)),
-              validate: (v) =>
-                v === null || (!isNaN(v) && v >= -90 && v <= 90) || 'Must be between -90 and 90',
+              setValueAs: (value) => (value === '' ? null : parseFloat(value)),
+              validate: (value) =>
+                value === null || (!Number.isNaN(value) && value >= -90 && value <= 90) || 'Must be between -90 and 90',
             })}
           />
         </Box>
+
         <Box>
           <TextField
             label="Longitude"
@@ -157,16 +178,17 @@ export const StudentForm = ({
             type="number"
             inputProps={{ step: 'any' }}
             error={!!errors.longitude}
-            helperText={errors.longitude?.message || 'Optional — GPS coordinate'}
+            helperText={errors.longitude?.message || 'Optional GPS coordinate'}
             {...register('longitude', {
-              setValueAs: (v) => (v === '' ? null : parseFloat(v)),
-              validate: (v) =>
-                v === null || (!isNaN(v) && v >= -180 && v <= 180) || 'Must be between -180 and 180',
+              setValueAs: (value) => (value === '' ? null : parseFloat(value)),
+              validate: (value) =>
+                value === null ||
+                (!Number.isNaN(value) && value >= -180 && value <= 180) ||
+                'Must be between -180 and 180',
             })}
           />
         </Box>
 
-        {/* Status */}
         <Box sx={{ gridColumn: '1 / -1' }}>
           <Typography variant="body2" color="text.secondary" mb={1} fontWeight={500}>
             Status
@@ -178,34 +200,13 @@ export const StudentForm = ({
               <ToggleButtonGroup
                 exclusive
                 value={field.value}
-                onChange={(_, v: StudentStatus) => v && field.onChange(v)}
+                onChange={(_, value: StudentStatus) => value && field.onChange(value)}
                 size="small"
               >
-                <ToggleButton
-                  value="ACTIVE"
-                  sx={{
-                    px: 3,
-                    '&.Mui-selected': {
-                      bgcolor: 'rgba(46,196,134,0.12)',
-                      color: '#1a9e6a',
-                      borderColor: 'rgba(46,196,134,0.3)',
-                      '&:hover': { bgcolor: 'rgba(46,196,134,0.18)' },
-                    },
-                  }}
-                >
+                <ToggleButton value="ACTIVE" sx={{ px: 3 }}>
                   Active
                 </ToggleButton>
-                <ToggleButton
-                  value="INACTIVE"
-                  sx={{
-                    px: 3,
-                    '&.Mui-selected': {
-                      bgcolor: 'rgba(180,180,180,0.15)',
-                      color: '#555',
-                      borderColor: 'rgba(180,180,180,0.3)',
-                    },
-                  }}
-                >
+                <ToggleButton value="INACTIVE" sx={{ px: 3 }}>
                   Inactive
                 </ToggleButton>
               </ToggleButtonGroup>
@@ -213,7 +214,6 @@ export const StudentForm = ({
           />
         </Box>
 
-        {/* Submit */}
         <Box sx={{ gridColumn: '1 / -1' }}>
           <Box display="flex" justifyContent="flex-end" pt={1}>
             <Button
@@ -225,7 +225,7 @@ export const StudentForm = ({
               startIcon={isSubmitting ? <CircularProgress size={16} color="inherit" /> : undefined}
               sx={{ minWidth: 160, borderRadius: 2 }}
             >
-              {isSubmitting ? 'Saving…' : submitLabel}
+              {isSubmitting ? 'Saving...' : submitLabel}
             </Button>
           </Box>
         </Box>
