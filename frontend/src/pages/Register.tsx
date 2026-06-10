@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { AxiosError } from 'axios';
 import {
   Container,
   Paper,
@@ -36,8 +37,9 @@ export const Register = () => {
     try {
       await register(formData.email, formData.password, formData.fullName);
       navigate('/');
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Registration failed. Please try again.');
+    } catch (err) {
+      const error = err as AxiosError<{ message?: string }>;
+      setError(error.response?.data?.message || 'Registration failed. Please try again.');
     }
   };
 

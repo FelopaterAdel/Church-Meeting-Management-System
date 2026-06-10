@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useLocation, Link as RouterLink } from 'react-router-dom';
+import { AxiosError } from 'axios';
 import {
   Container,
   Paper,
@@ -27,10 +28,11 @@ export const Login = () => {
 
     try {
       await login(email, password);
-      const from = (location.state as any)?.from?.pathname || '/';
+      const from = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname || '/';
       navigate(from);
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
+    } catch (err) {
+      const error = err as AxiosError<{ message?: string }>;
+      setError(error.response?.data?.message || 'Login failed. Please try again.');
     }
   };
 

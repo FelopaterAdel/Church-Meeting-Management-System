@@ -2,7 +2,7 @@ import { useQuery as useReactQuery } from '@tanstack/react-query';
 import type { UseQueryOptions } from '@tanstack/react-query';
 import axiosInstance from '../api/client';
 
-export const useQuery = <T = any,>(
+export const useQuery = <T = unknown,>(
   key: string[],
   url: string,
   options?: Omit<UseQueryOptions<T, Error, T>, 'queryKey' | 'queryFn'>

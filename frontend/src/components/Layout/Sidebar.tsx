@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import HomeIcon from '@mui/icons-material/Home';
 import SettingsIcon from '@mui/icons-material/Settings';
 import PeopleIcon from '@mui/icons-material/People';
+import SchoolIcon from '@mui/icons-material/School';
+import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useAuth } from '../../context/AuthContext';
 
@@ -19,6 +21,8 @@ export const Sidebar = ({ open, onClose }: SidebarProps) => {
 
   const menuItems = [
     { label: 'Dashboard', icon: <HomeIcon />, path: '/' },
+    { label: 'Students', icon: <SchoolIcon />, path: '/students' },
+    { label: 'Meetings', icon: <EventAvailableIcon />, path: '/meetings' },
     { label: 'Members', icon: <PeopleIcon />, path: '/members' },
     { label: 'Settings', icon: <SettingsIcon />, path: '/settings' },
   ];

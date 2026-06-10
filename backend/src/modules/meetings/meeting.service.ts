@@ -149,6 +149,16 @@ export const createMeeting = async (input: CreateMeetingInput, createdBy: string
   return toPublicMeeting(meeting);
 };
 
+export const getMeetingById = async (meetingId: string): Promise<PublicMeeting> => {
+  const meeting = await MeetingModel.findById(meetingId);
+
+  if (!meeting) {
+    throw new AppError('Meeting was not found', StatusCodes.NOT_FOUND);
+  }
+
+  return toPublicMeeting(meeting);
+};
+
 export const updateMeeting = async (meetingId: string, input: UpdateMeetingInput): Promise<PublicMeeting> => {
   const meeting = await MeetingModel.findById(meetingId);
 

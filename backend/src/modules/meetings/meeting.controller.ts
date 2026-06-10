@@ -37,6 +37,16 @@ export const createMeeting = async (req: Request, res: Response): Promise<void> 
   });
 };
 
+export const getMeetingById = async (req: Request, res: Response): Promise<void> => {
+  const meeting = await meetingService.getMeetingById(getMeetingId(req));
+
+  sendSuccess(res, {
+    statusCode: StatusCodes.OK,
+    message: 'Meeting retrieved successfully',
+    data: { meeting }
+  });
+};
+
 export const updateMeeting = async (req: Request, res: Response): Promise<void> => {
   const meeting = await meetingService.updateMeeting(getMeetingId(req), req.body as UpdateMeetingInput);
 

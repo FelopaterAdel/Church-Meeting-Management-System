@@ -6,6 +6,13 @@ import Dashboard from '../pages/Dashboard';
 import Members from '../pages/Members';
 import Settings from '../pages/Settings';
 import Unauthorized from '../pages/Unauthorized';
+import StudentsListPage from '../pages/students/StudentsListPage';
+import CreateStudentPage from '../pages/students/CreateStudentPage';
+import EditStudentPage from '../pages/students/EditStudentPage';
+import StudentDetailsPage from '../pages/students/StudentDetailsPage';
+import MeetingsListPage from '../pages/meetings/MeetingsListPage';
+import CreateMeetingPage from '../pages/meetings/CreateMeetingPage';
+import MeetingDetailsPage from '../pages/meetings/MeetingDetailsPage';
 
 export const AppRoutes = () => {
   return (
@@ -26,6 +33,31 @@ export const AppRoutes = () => {
           }
         />
         <Route
+          path="/meetings"
+          element={
+            <ProtectedRoute>
+              <MeetingsListPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/meetings/create"
+          element={
+            <ProtectedRoute>
+              <CreateMeetingPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/meetings/:id"
+          element={
+            <ProtectedRoute>
+              <MeetingDetailsPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
           path="/members"
           element={
             <ProtectedRoute>
@@ -42,6 +74,38 @@ export const AppRoutes = () => {
           }
         />
 
+         <Route
+          path="/students"
+          element={
+            <ProtectedRoute>
+             <StudentsListPage />
+            </ProtectedRoute>
+          }
+        />
+         <Route
+          path="students/create"
+          element={
+            <ProtectedRoute>
+              <CreateStudentPage />
+            </ProtectedRoute>
+          }
+        />
+<Route
+          path="students/:id"
+          element={
+            <ProtectedRoute>
+              <StudentDetailsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="students/:id/edit"
+          element={
+            <ProtectedRoute>
+              <EditStudentPage />
+            </ProtectedRoute>
+          }
+        />
         {/* Catch-all redirect */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

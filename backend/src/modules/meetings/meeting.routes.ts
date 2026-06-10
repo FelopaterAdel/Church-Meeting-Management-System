@@ -16,6 +16,7 @@ export const meetingRoutes = Router();
 meetingRoutes.use(authenticate);
 
 meetingRoutes.get('/', validateRequest(listMeetingsSchema), asyncHandler(meetingController.listMeetings));
+meetingRoutes.get('/:id', validateRequest(meetingIdParamSchema), asyncHandler(meetingController.getMeetingById));
 meetingRoutes.post(
   '/',
   authorizeRoles('SUPER_ADMIN'),
