@@ -11,16 +11,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Initialize auth from localStorage
   useEffect(() => {
-    const initializeAuth = async () => {
-      const storedToken = localStorage.getItem('authToken');
-      const storedUser = localStorage.getItem('user');
+   const initializeAuth = async () => {
+  const storedToken = localStorage.getItem('authToken');
+  const storedUser = localStorage.getItem('user');
 
-      if (storedToken && storedUser) {
-        setToken(storedToken);
-        setUser(JSON.parse(storedUser));
-      }
-      setIsLoading(false);
-    };
+  if (storedToken && storedUser && storedUser !== 'undefined' && storedUser !== 'null') {
+    try {
+      setToken(storedToken);
+      setUser(JSON.parse(storedUser));
+    } catch {
+      // Corrupted storage — clear it
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('user');
+    }
+  }
+  setIsLoading(false);
+};
 
     initializeAuth();
   }, []);
@@ -45,10 +51,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem('user');
   };
 
-  const register = async (email: string, password: string, name: string) => {
+  const register = async (email: string, password: string, fullName: string) => {
     setIsLoading(true);
     try {
-      const response = await authApi.register({ email, password, name });
+      const response = await authApi.register({ email, password, fullName });
       setToken(response.token);
       setUser(response.user);
       localStorage.setItem('authToken', response.token);

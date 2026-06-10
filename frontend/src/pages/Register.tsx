@@ -16,11 +16,11 @@ import { useAuth } from '../context/AuthContext';
 export const Register = () => {
   const navigate = useNavigate();
   const { register, isLoading } = useAuth();
-  const [formData, setFormData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
+  const [formData, setFormData] = useState({ fullName: '', email: '', password: '', confirmPassword: '' });
   const [error, setError] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target; 
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -34,7 +34,7 @@ export const Register = () => {
     }
 
     try {
-      await register(formData.email, formData.password, formData.name);
+      await register(formData.email, formData.password, formData.fullName);
       navigate('/');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Registration failed. Please try again.');
@@ -70,8 +70,8 @@ export const Register = () => {
             <TextField
               fullWidth
               label="Full Name"
-              name="name"
-              value={formData.name}
+              name="fullName"
+              value={formData.fullName}
               onChange={handleChange}
               required
               disabled={isLoading}

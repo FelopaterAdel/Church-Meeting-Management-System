@@ -7,7 +7,7 @@ export const authApi = {
     return response.data;
   },
 
-  register: async (data: { email: string; password: string; name: string }): Promise<LoginResponse> => {
+  register: async (data: { email: string; password: string; fullName: string }): Promise<LoginResponse> => {
     const response = await axiosInstance.post<LoginResponse>('/auth/register', data);
     return response.data;
   },

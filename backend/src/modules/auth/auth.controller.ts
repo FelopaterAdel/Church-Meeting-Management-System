@@ -4,6 +4,7 @@ import { sendSuccess } from '../../utils/response.util.js';
 import * as authService from './auth.service.js';
 
 export const registerServant = async (req: Request, res: Response): Promise<void> => {
+  console.log(req.body);
   const user = await authService.registerServant(req.body);
 
   sendSuccess(res, {
