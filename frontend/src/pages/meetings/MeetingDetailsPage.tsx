@@ -170,10 +170,7 @@ export default function MeetingDetailsPage() {
       <PageHeader
         title={meeting.meetingName}
         subtitle={`${formatDate(meeting.date)} - ${stageById.get(meeting.stageId) ?? meeting.stageId}`}
-        breadcrumbs={[
-          { label: 'Meetings', to: '/meetings' },
-          { label: meeting.meetingName },
-        ]}
+       
         action={
           <Stack direction="row" spacing={1}>
             <Chip

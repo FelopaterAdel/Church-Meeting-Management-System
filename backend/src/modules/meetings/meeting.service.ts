@@ -223,7 +223,6 @@ const generateAbsencesForMeeting = async (
             attendedAt: now,
             recordedBy: recordedById,
             createdAt: now,
-            updatedAt: now
           }
         },
         upsert: true
