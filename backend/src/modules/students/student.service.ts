@@ -188,11 +188,6 @@ export const createStudent = async (input: CreateStudentInput): Promise<PublicSt
 
   const student = await StudentModel.create({
     fullName: input.fullName,
-    phoneNumber: input.phoneNumber,
-    confessionFather: input.confessionFather,
-    address: input.address,
-    latitude: input.latitude,
-    longitude: input.longitude,
     stage: input.stageId,
     qrCode,
     internalStudentCode: input.internalStudentCode,
@@ -221,26 +216,7 @@ export const updateStudent = async (studentId: string, input: UpdateStudentInput
     student.fullName = input.fullName;
   }
 
-  if (input.phoneNumber !== undefined) {
-    student.phoneNumber = input.phoneNumber;
-  }
-
-  if (input.confessionFather !== undefined) {
-    student.confessionFather = input.confessionFather;
-  }
-
-  if (input.address !== undefined) {
-    student.address = input.address;
-  }
-
-  if (input.latitude !== undefined) {
-    student.latitude = input.latitude;
-  }
-
-  if (input.longitude !== undefined) {
-    student.longitude = input.longitude;
-  }
-
+  
   if (input.internalStudentCode !== undefined) {
     student.internalStudentCode = input.internalStudentCode;
   }
