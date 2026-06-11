@@ -37,32 +37,32 @@ const studentSchema = new Schema<Student, StudentModelType>(
     },
     phoneNumber: {
       type: String,
-      required: true,
       trim: true,
       maxlength: 30,
       index: true
     },
     confessionFather: {
       type: String,
-      required: true,
       trim: true,
       maxlength: 120
     },
     address: {
       type: String,
-      required: true,
       trim: true,
       maxlength: 500
     },
     latitude: {
       type: Number,
+      default:27.442192,
       min: -90,
       max: 90
     },
     longitude: {
       type: Number,
+      default:30.748574,
       min: -180,
       max: 180
+      
     },
     stage: {
       type: Schema.Types.ObjectId,
@@ -79,7 +79,6 @@ const studentSchema = new Schema<Student, StudentModelType>(
     },
     internalStudentCode: {
       type: String,
-      required: true,
       trim: true,
       uppercase: true,
       unique: true,
@@ -88,7 +87,6 @@ const studentSchema = new Schema<Student, StudentModelType>(
     status: {
       type: String,
       enum: STUDENT_STATUSES,
-      required: true,
       default: 'ACTIVE',
       index: true
     },

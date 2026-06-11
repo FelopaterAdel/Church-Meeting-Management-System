@@ -6,7 +6,7 @@ import { StudentForm } from '../../components/students/StudentForm';
 import { PageHeader } from '../../components/common/PageHeader';
 import { LoadingState, ErrorState } from '../../components/common/StateViews';
 import type { StudentFormData } from '../../types/student';
-
+import MainLayout from '../../components/Layout/MainLayout';
 export default function EditStudentPage() {
   const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -25,17 +25,14 @@ export default function EditStudentPage() {
   if (stagesError) return <ErrorState message="Failed to load stages." onRetry={refetchStages} />;
 
   return (
+    <MainLayout title="Meetings">
+          <PageHeader
+            title="Edit Student"
+            subtitle={student.fullName}
+          
+          />
     <Box>
-      <PageHeader
-        title="Edit Student"
-        subtitle={student.fullName}
-        breadcrumbs={[
-          { label: 'Students', to: '/students' },
-          { label: student.fullName, to: `/students/${id}` },
-          { label: 'Edit' },
-        ]}
-      />
-
+      
       {mutation.isError && (
         <Alert severity="error" sx={{ mb: 3 }}>
           {(mutation.error as Error)?.message || 'Failed to update student. Please try again.'}
@@ -68,5 +65,6 @@ export default function EditStudentPage() {
         />
       </Paper>
     </Box>
+    </MainLayout>
   );
 }

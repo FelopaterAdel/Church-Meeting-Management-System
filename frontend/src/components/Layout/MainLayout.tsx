@@ -9,7 +9,7 @@ interface MainLayoutProps {
 }
 
 export const MainLayout = ({ children, title }: MainLayoutProps) => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -22,7 +22,7 @@ export const MainLayout = ({ children, title }: MainLayoutProps) => {
       setSidebarOpen(false);
     }
   };
-
+//const [sidebarOpen, setSidebarOpen] = useState(false);
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Header onMenuClick={handleMenuClick} title={title} />

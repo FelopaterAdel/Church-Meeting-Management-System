@@ -2,12 +2,6 @@ import { z } from 'zod';
 import { idParamSchema, objectIdSchema, paginationQuerySchema } from '../../validation/common.validation.js';
 import { STUDENT_STATUSES } from './student.model.js';
 
-const phoneSchema = z
-  .string()
-  .trim()
-  .min(7, 'Phone number must be at least 7 characters')
-  .max(30, 'Phone number must be at most 30 characters')
-  .regex(/^[0-9+\-\s()]+$/, 'Phone number contains invalid characters');
 
 const internalStudentCodeSchema = z
   .string()
@@ -27,11 +21,6 @@ export const listStudentsSchema = z.object({
 export const createStudentSchema = z.object({
   body: z.object({
     fullName: z.string().trim().min(2).max(120),
-    phoneNumber: phoneSchema,
-    confessionFather: z.string().trim().min(2).max(120),
-    address: z.string().trim().min(2).max(500),
-    latitude: z.coerce.number().min(-90).max(90).optional(),
-    longitude: z.coerce.number().min(-180).max(180).optional(),
     stageId: objectIdSchema,
     internalStudentCode: internalStudentCodeSchema,
     status: z.enum(STUDENT_STATUSES).default('ACTIVE')
@@ -43,11 +32,6 @@ export const updateStudentSchema = z.object({
   body: z
     .object({
       fullName: z.string().trim().min(2).max(120).optional(),
-      phoneNumber: phoneSchema.optional(),
-      confessionFather: z.string().trim().min(2).max(120).optional(),
-      address: z.string().trim().min(2).max(500).optional(),
-      latitude: z.coerce.number().min(-90).max(90).optional(),
-      longitude: z.coerce.number().min(-180).max(180).optional(),
       stageId: objectIdSchema.optional(),
       internalStudentCode: internalStudentCodeSchema.optional(),
       status: z.enum(STUDENT_STATUSES).optional()

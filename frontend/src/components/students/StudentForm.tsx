@@ -87,11 +87,9 @@ export const StudentForm = ({
           <TextField
             label="Phone Number"
             fullWidth
-            required
             error={!!errors.phoneNumber}
             helperText={errors.phoneNumber?.message}
             {...register('phoneNumber', {
-              required: 'Phone number is required',
               pattern: {
                 value: /^[0-9+\-\s()]{7,30}$/,
                 message: 'Enter a valid phone number',
@@ -104,13 +102,9 @@ export const StudentForm = ({
           <TextField
             label="Confession Father"
             fullWidth
-            required
             error={!!errors.confessionFather}
             helperText={errors.confessionFather?.message}
-            {...register('confessionFather', {
-              required: 'Confession father is required',
-              minLength: { value: 2, message: 'Confession father must be at least 2 characters' },
-            })}
+            
           />
         </Box>
 
@@ -143,15 +137,11 @@ export const StudentForm = ({
           <TextField
             label="Address"
             fullWidth
-            required
             multiline
             minRows={2}
             error={!!errors.address}
             helperText={errors.address?.message}
-            {...register('address', {
-              required: 'Address is required',
-              minLength: { value: 2, message: 'Address must be at least 2 characters' },
-            })}
+           
           />
         </Box>
 
@@ -165,8 +155,8 @@ export const StudentForm = ({
             helperText={errors.latitude?.message || 'Optional GPS coordinate'}
             {...register('latitude', {
               setValueAs: (value) => (value === '' ? null : parseFloat(value)),
-              validate: (value) =>
-                value === null || (!Number.isNaN(value) && value >= -90 && value <= 90) || 'Must be between -90 and 90',
+              // validate: (value) =>
+              //   value === null || (!Number.isNaN(value) && value >= -90 && value <= 90) || 'Must be between -90 and 90',
             })}
           />
         </Box>
@@ -181,10 +171,10 @@ export const StudentForm = ({
             helperText={errors.longitude?.message || 'Optional GPS coordinate'}
             {...register('longitude', {
               setValueAs: (value) => (value === '' ? null : parseFloat(value)),
-              validate: (value) =>
-                value === null ||
-                (!Number.isNaN(value) && value >= -180 && value <= 180) ||
-                'Must be between -180 and 180',
+              // validate: (value) =>
+              //   value === null ||
+              //   (!Number.isNaN(value) && value >= -180 && value <= 180) ||
+              //   'Must be between -180 and 180',
             })}
           />
         </Box>

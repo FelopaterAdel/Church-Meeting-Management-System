@@ -17,10 +17,7 @@ export const studentRoutes = Router();
 studentRoutes.use(authenticate);
 
 studentRoutes.get('/', validateRequest(listStudentsSchema), asyncHandler(studentController.listStudents));
-studentRoutes.get(
-  '/qr/:qrCode',
-  validateRequest(studentQrCodeParamSchema),
-  asyncHandler(studentController.resolveStudentByQrCode)
+studentRoutes.get('/qr/:qrCode',validateRequest(studentQrCodeParamSchema),asyncHandler(studentController.resolveStudentByQrCode)
 );
 studentRoutes.get('/:id/qr', validateRequest(studentIdParamSchema), asyncHandler(studentController.getStudentQrData));
 studentRoutes.get('/:id', validateRequest(studentIdParamSchema), asyncHandler(studentController.getStudentById));

@@ -12,6 +12,7 @@ import { ErrorState, LoadingState } from '../../components/common/StateViews';
 import { StatusChip } from '../../components/common/StatusChip';
 import { useStages } from '../../hooks/useStages';
 import { useStudent } from '../../hooks/useStudents';
+import MainLayout from '../../components/Layout/MainLayout';
 
 const InfoRow = ({ icon, label, value }: { icon: React.ReactNode; label: string; value: React.ReactNode }) => (
   <Stack direction="row" spacing={2} alignItems="flex-start">
@@ -50,14 +51,11 @@ export default function StudentDetailsPage() {
   const hasCoordinates = student.latitude !== undefined || student.longitude !== undefined;
 
   return (
-    <Box>
-      <PageHeader
-        title="Student Profile"
-        breadcrumbs={[
-          { label: 'Students', to: '/students' },
-          { label: student.fullName },
-        ]}
-        action={
+    <MainLayout 
+          title="Student Profile">
+          <PageHeader
+            title="Student Profile"
+             action={
           <Stack direction="row" spacing={1}>
             <Button variant="outlined" startIcon={<ArrowBackIcon />} onClick={() => navigate('/students')}>
               Back
@@ -67,8 +65,9 @@ export default function StudentDetailsPage() {
             </Button>
           </Stack>
         }
-      />
-
+          />
+    <Box>              
+          
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 2fr' }, gap: 3 }}>
         <Paper
           variant="outlined"
@@ -238,5 +237,6 @@ export default function StudentDetailsPage() {
         </Paper>
       </Box>
     </Box>
+    </MainLayout>
   );
 }

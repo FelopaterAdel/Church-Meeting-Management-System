@@ -31,6 +31,7 @@ import { ConfirmDialog } from '../../components/common/ConfirmDialog';
 import type { StudentStatus } from '../../types/student';
 import { useDebounce } from '../../hooks/useDebounce';
 import { useStages } from '../../hooks/useStages';
+import MainLayout from '../../components/Layout/MainLayout';
 
 const getInitials = (name: string) =>
   name
@@ -77,12 +78,12 @@ export default function StudentsListPage() {
   };
 
   return (
-    <Box>
-      <PageHeader
-        title="Students"
-        subtitle={data ? `${data.pagination.total} students registered` : undefined}
-        action={
-          <Button
+    <MainLayout title="Meetings">
+          <PageHeader
+            title="Students"
+            subtitle={data ? `${data.pagination.total} students registered` : undefined}
+            action={
+               <Button
             variant="contained"
             startIcon={<AddIcon />}
             onClick={() => navigate('/students/create')}
@@ -91,9 +92,10 @@ export default function StudentsListPage() {
           >
             Add Student
           </Button>
-        }
-      />
-
+            }
+          />
+    <Box>
+      
       <StudentsFilters
         search={search}
         stageId={stageId}
@@ -257,5 +259,6 @@ export default function StudentsListPage() {
         loading={deleteMutation.isPending}
       />
     </Box>
+    </MainLayout>
   );
 }

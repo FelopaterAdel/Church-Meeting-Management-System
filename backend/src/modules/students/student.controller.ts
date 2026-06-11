@@ -58,6 +58,7 @@ export const resolveStudentByQrCode = async (req: Request, res: Response): Promi
 };
 
 export const createStudent = async (req: Request, res: Response): Promise<void> => {
+  console.log('hi', req.body);
   const student = await studentService.createStudent(req.body as CreateStudentInput);
 
   sendSuccess(res, {

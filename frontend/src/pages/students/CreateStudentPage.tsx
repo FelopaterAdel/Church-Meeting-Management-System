@@ -6,6 +6,7 @@ import { StudentForm } from '../../components/students/StudentForm';
 import { PageHeader } from '../../components/common/PageHeader';
 import { LoadingState, ErrorState } from '../../components/common/StateViews';
 import type { StudentFormData } from '../../types/student';
+import MainLayout from '../../components/Layout/MainLayout';
 
 export default function CreateStudentPage() {
   const navigate = useNavigate();
@@ -18,16 +19,14 @@ export default function CreateStudentPage() {
   };
 
   return (
-    <Box>
+<MainLayout title="Meetings">
       <PageHeader
         title="Add Student"
         subtitle="Register a new student in the church system"
-        breadcrumbs={[
-          { label: 'Students', to: '/students' },
-          { label: 'Add Student' },
-        ]}
+      
       />
 
+    <Box>
       {mutation.isError && (
         <Alert severity="error" sx={{ mb: 3 }}>
           {(mutation.error as Error)?.message || 'Failed to create student. Please try again.'}
@@ -49,5 +48,6 @@ export default function CreateStudentPage() {
         )}
       </Paper>
     </Box>
+    </MainLayout>
   );
 }
