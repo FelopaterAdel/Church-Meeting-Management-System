@@ -64,15 +64,15 @@ export const createApp = (): Application => {
   app.use(`${env.API_PREFIX}/users`, userRoutes);
   app.use(`${env.API_PREFIX}/visits`, visitRoutes);
 
-  app.use(env.API_PREFIX, (_req: Request, res: Response) => {
-    sendSuccess(res, {
-      statusCode: StatusCodes.OK,
-      message: 'Church Meeting Management API',
-      data: {
-        version: '1.0.0'
-      }
-    });
-  });
+  // app.use(env.API_PREFIX, (_req: Request, res: Response) => {
+  //   sendSuccess(res, {
+  //     statusCode: StatusCodes.OK,
+  //     message: 'Church Meeting Management API',
+  //     data: {
+  //       version: '1.0.0'
+  //     }
+  //   });
+  // });
 
   app.use(notFoundHandler);
   app.use(errorHandler);

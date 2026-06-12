@@ -2,14 +2,37 @@ import { StatusCodes } from 'http-status-codes';
 import type { Request, Response } from 'express';
 import { sendSuccess } from '../../utils/response.util.js';
 import * as userService from './user.service.js';
-import type { ListServantsQuery } from './user.validation.js';
+import type { ListServantsQuery, ListUsersQuery } from './user.validation.js';
 
 type ServantIdParams = {
   id: string;
 };
 
+type UserIdParams = {
+  id: string;
+};
+
+const getUserId = (req: Request): string => {
+  return (req.params as UserIdParams).id;
+};
+
 const getServantId = (req: Request): string => {
   return (req.params as ServantIdParams).id;
+};
+
+export const listUsers = async (req: Request, res: Response): Promise<void> => {
+  const result = await userService.listUsers(req.query as unknown as ListUsersQuery);
+
+  sendSuccess(res, {
+    statusCode: StatusCodes.OK,
+    message: 'Users retrieved successfully',
+    data: {
+      users: result.users
+    },
+    meta: {
+      pagination: result.pagination
+    }
+  });
 };
 
 export const listServants = async (req: Request, res: Response): Promise<void> => {
@@ -24,6 +47,46 @@ export const listServants = async (req: Request, res: Response): Promise<void> =
     meta: {
       pagination: result.pagination
     }
+  });
+};
+
+export const approveUser = async (req: Request, res: Response): Promise<void> => {
+  const user = await userService.approveUser(getUserId(req));
+
+  sendSuccess(res, {
+    statusCode: StatusCodes.OK,
+    message: 'User approved successfully',
+    data: { user }
+  });
+};
+
+export const rejectUser = async (req: Request, res: Response): Promise<void> => {
+  const user = await userService.rejectUser(getUserId(req));
+
+  sendSuccess(res, {
+    statusCode: StatusCodes.OK,
+    message: 'User rejected successfully',
+    data: { user }
+  });
+};
+
+export const suspendUser = async (req: Request, res: Response): Promise<void> => {
+  const user = await userService.suspendUser(getUserId(req));
+
+  sendSuccess(res, {
+    statusCode: StatusCodes.OK,
+    message: 'User suspended successfully',
+    data: { user }
+  });
+};
+
+export const removeUser = async (req: Request, res: Response): Promise<void> => {
+  await userService.removeUser(getUserId(req), req.user!.id);
+
+  sendSuccess(res, {
+    statusCode: StatusCodes.OK,
+    message: 'User removed successfully',
+    data: null
   });
 };
 

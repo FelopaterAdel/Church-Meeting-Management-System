@@ -9,6 +9,8 @@ export type User = {
   status: AccountStatus;
   isActive: boolean;
   lastLoginAt?: Date;
+  isDeleted: boolean;
+  deletedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -58,6 +60,15 @@ const userSchema = new Schema<User, UserModelType>(
       required: true,
       default: true,
       index: true
+    },
+    isDeleted: {
+      type: Boolean,
+      required: true,
+      default: false,
+      index: true
+    },
+    deletedAt: {
+      type: Date
     },
     lastLoginAt: {
       type: Date
