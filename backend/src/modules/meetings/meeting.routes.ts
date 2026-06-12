@@ -19,8 +19,8 @@ meetingRoutes.get('/', validateRequest(listMeetingsSchema), asyncHandler(meeting
 meetingRoutes.get('/:id', validateRequest(meetingIdParamSchema), asyncHandler(meetingController.getMeetingById));
 meetingRoutes.post(
   '/',
-   authorizeRoles('SUPER_ADMIN'),
-   validateRequest(createMeetingSchema),
+  authorizeRoles('SUPER_ADMIN','SERVANT'),
+  validateRequest(createMeetingSchema),
   asyncHandler(meetingController.createMeeting)
 );
 meetingRoutes.put(
@@ -31,8 +31,8 @@ meetingRoutes.put(
 );
 meetingRoutes.patch(
   '/:id/close',
-  authorizeRoles('SUPER_ADMIN'),
- validateRequest(meetingIdParamSchema),
+  authorizeRoles('SUPER_ADMIN','SERVANT'),
+  validateRequest(meetingIdParamSchema),
   asyncHandler(meetingController.closeMeeting)
 );
 meetingRoutes.patch(

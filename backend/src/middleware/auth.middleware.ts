@@ -17,9 +17,9 @@ export const authenticate = async (req: Request, _res: Response, next: NextFunct
     const token = getBearerToken(req.headers.authorization);
     const payload = verifyAccessToken(token);
 
-    const user = await UserModel.findById(payload.sub).select('_id role status isActive');
+    const user = await UserModel.findById(payload.sub).select('_id role status isActive isDeleted');
 
-    if (!user || !user.isActive) {
+    if (!user || !user.isActive || user.isDeleted) {
       throw new AppError('Authentication token is invalid', StatusCodes.UNAUTHORIZED);
     }
 

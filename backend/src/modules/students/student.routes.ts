@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import { asyncHandler } from '../../middleware/async-handler.middleware.js';
 import { authenticate } from '../../middleware/auth.middleware.js';
-import { authorizeRoles } from '../../middleware/role.middleware.js';
 import { validateRequest } from '../../middleware/validation.middleware.js';
 import * as studentController from './student.controller.js';
 import {
@@ -24,19 +23,19 @@ studentRoutes.get('/:id', validateRequest(studentIdParamSchema), asyncHandler(st
 
 studentRoutes.post(
   '/',
-  authorizeRoles('SUPER_ADMIN'),
+  authenticate,
   validateRequest(createStudentSchema),
   asyncHandler(studentController.createStudent)
 );
 studentRoutes.put(
   '/:id',
-  authorizeRoles('SUPER_ADMIN'),
+  authenticate,
   validateRequest(updateStudentSchema),
   asyncHandler(studentController.updateStudent)
 );
 studentRoutes.delete(
   '/:id',
-  authorizeRoles('SUPER_ADMIN'),
+  authenticate,
   validateRequest(studentIdParamSchema),
   asyncHandler(studentController.softDeleteStudent)
 );
