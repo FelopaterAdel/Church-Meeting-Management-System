@@ -3,6 +3,8 @@ import { createApp } from './app.js';
 import { connectDatabase, disconnectDatabase } from './config/database.js';
 import { env } from './config/env.js';
 import { logger } from './utils/logger.util.js';
+import mongoose from 'mongoose';
+import { seedStages } from './modules/stages/seedStages.js';
 
 const startServer = async (): Promise<void> => {
   await connectDatabase();
@@ -43,3 +45,15 @@ startServer().catch((error) => {
   logger.error('Application startup failed', error);
   process.exit(1);
 });
+
+async function bootstrap() {
+  // try {
+    await mongoose.connect(env.MONGODB_URI);
+
+    await seedStages();
+
+    const app = createApp();
+
+}
+
+bootstrap();
