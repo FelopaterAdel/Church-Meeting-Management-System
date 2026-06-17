@@ -17,11 +17,11 @@ type CountByStatusResult = {
 type StudentRankingResult = {
   _id: Types.ObjectId;
   count: number;
-  student?: Array<{
+  student?: {
     fullName: string;
     internalStudentCode: string;
     stage: Types.ObjectId;
-  }>;
+  };
   stage?: Array<{
     name: string;
   }>;
@@ -238,7 +238,7 @@ const getStudentRankingReport = async (
   const results = await AttendanceModel.aggregate<StudentRankingResult>(pipeline);
 
   return results.map((item) => {
-    const student = item.student?.[0];
+    const student = item.student;
     const stage = item.stage?.[0];
 
     return {

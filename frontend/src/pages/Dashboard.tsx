@@ -162,7 +162,6 @@ interface RankingPanelProps {
   emptyText: string;
   tone: 'success' | 'warning';
 }
-
 const RankingPanel = ({ title, subtitle, students, loading, emptyText, tone }: RankingPanelProps) => (
   <Paper variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden' }}>
     <Box sx={{ p: 2.5, borderBottom: '1px solid', borderColor: 'divider' }}>
@@ -204,7 +203,7 @@ const RankingPanel = ({ title, subtitle, students, loading, emptyText, tone }: R
                     {student.fullName}
                   </Typography>
                   <Typography variant="caption" color="text.secondary" sx={{ fontFamily: 'monospace' }}>
-                    {student.internalStudentCode || student.studentId}
+                    {student.internalStudentCode || student.fullName}
                   </Typography>
                 </TableCell>
                 <TableCell>{student.stageName ?? 'Unassigned'}</TableCell>
