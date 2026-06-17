@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Alert, Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography } from '@mui/material';
 import CameraswitchIcon from '@mui/icons-material/Cameraswitch';
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
@@ -18,7 +18,7 @@ const getScannerErrorMessage = (error: unknown): string => {
 };
 
 export const QRCodeScanner = ({ open, disabled = false, loading = false, onClose, onScan }: QRCodeScannerProps) => {
-  const scannerId = `qr-scanner-${useId().replace(/:/g, '')}`;
+  const scannerId = "qr-scanner";
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const isProcessingRef = useRef(false);
   const [cameras, setCameras] = useState<CameraDevice[]>([]);
@@ -30,12 +30,11 @@ export const QRCodeScanner = ({ open, disabled = false, loading = false, onClose
     if (!open || disabled) return undefined;
 
     let isMounted = true;
-    const scanner = new Html5Qrcode(scannerId, false);
-    scannerRef.current = scanner;
+    
     isProcessingRef.current = false;
 
-    const startScanner = async () => {
-      await Promise.resolve();
+   const startScanner = async () => {
+      await new Promise(resolve => setTimeout(resolve, 300));
       if (!isMounted) return;
 
       setStartupError(null);
@@ -52,7 +51,8 @@ export const QRCodeScanner = ({ open, disabled = false, loading = false, onClose
           setStartupError('No camera was found on this device.');
           return;
         }
-
+const scanner = new Html5Qrcode("qr-scanner", false);
+    scannerRef.current = scanner;
         await scanner.start(
           selectedCamera.id,
           {
