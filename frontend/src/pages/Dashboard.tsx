@@ -43,14 +43,14 @@ export const Dashboard = () => {
   const widgets = statistics
     ? [
         {
-          label: 'Total Students',
+          label: 'عدد المخدومين',
           value: statistics.totalStudents.toLocaleString(),
           helper: `${statistics.totalActiveStudents.toLocaleString()} active`,
           icon: <GroupsIcon />,
           color: '#2563eb',
         },
         {
-          label: 'Attendance',
+          label: 'نسبة الحضور',
           value: `${statistics.attendancePercentage}%`,
           helper: `${statistics.totalMeetings.toLocaleString()} meetings tracked`,
           icon: <TrendingUpIcon />,
@@ -58,14 +58,14 @@ export const Dashboard = () => {
           progress: statistics.attendancePercentage,
         },
         {
-          label: 'Present Count',
+          label: 'عدد الححضور',
           value: statistics.presentCount.toLocaleString(),
           helper: 'Recorded attendance',
           icon: <HowToRegIcon />,
           color: '#0f766e',
         },
         {
-          label: 'Absent Count',
+          label: 'عدد الغياب',
           value: statistics.absentCount.toLocaleString(),
           helper: 'Generated absence records',
           icon: <PersonOffIcon />,
@@ -132,7 +132,7 @@ export const Dashboard = () => {
 
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: '1fr 1fr' }, gap: 3 }}>
             <RankingPanel
-              title="Most Active Students"
+              title="المنتظمين"
               subtitle="Highest present counts"
               students={activeStudents}
               loading={activeLoading}
@@ -140,7 +140,7 @@ export const Dashboard = () => {
               tone="success"
             />
             <RankingPanel
-              title="Most Absent Students"
+              title="المنقطعين"
               subtitle="Highest absent counts"
               students={absentStudents}
               loading={absentLoading}
@@ -181,11 +181,13 @@ const RankingPanel = ({ title, subtitle, students, loading, emptyText, tone }: R
       <Table size="small">
         <TableHead>
           <TableRow sx={{ bgcolor: 'grey.50' }}>
-            <TableCell sx={{ fontWeight: 700 }}>Student</TableCell>
-            <TableCell sx={{ fontWeight: 700 }}>Stage</TableCell>
-            <TableCell align="right" sx={{ fontWeight: 700 }}>
-              Count
+             <TableCell align="right" sx={{ fontWeight: 700 }}>
+              عدد مرات الحضور 
             </TableCell>
+            <TableCell sx={{ fontWeight: 700 }}>المرحلة</TableCell>
+
+            <TableCell sx={{ fontWeight: 700 }}>الاسم</TableCell>
+           
           </TableRow>
         </TableHead>
         <TableBody>
@@ -198,6 +200,11 @@ const RankingPanel = ({ title, subtitle, students, loading, emptyText, tone }: R
           ) : (
             students.map((student) => (
               <TableRow key={student.studentId} hover>
+                 <TableCell align="right">
+                  <Chip label={student.count} color={tone} size="small" sx={{ borderRadius: 1, minWidth: 44 }} />
+                </TableCell>
+                <TableCell>{student.stageName ?? 'Unassigned'}</TableCell>
+               
                 <TableCell>
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     {student.fullName}
@@ -206,10 +213,7 @@ const RankingPanel = ({ title, subtitle, students, loading, emptyText, tone }: R
                     {student.internalStudentCode || student.fullName}
                   </Typography>
                 </TableCell>
-                <TableCell>{student.stageName ?? 'Unassigned'}</TableCell>
-                <TableCell align="right">
-                  <Chip label={student.count} color={tone} size="small" sx={{ borderRadius: 1, minWidth: 44 }} />
-                </TableCell>
+                
               </TableRow>
             ))
           )}

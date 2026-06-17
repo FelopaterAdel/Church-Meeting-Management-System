@@ -125,9 +125,7 @@ export default function StudentsListPage() {
                   <TableCell sx={{ fontWeight: 700, color: 'text.secondary', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                     Stage
                   </TableCell>
-                  <TableCell sx={{ fontWeight: 700, color: 'text.secondary', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                    Code
-                  </TableCell>
+                  
                   <TableCell sx={{ fontWeight: 700, color: 'text.secondary', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                     Status
                   </TableCell>
@@ -188,11 +186,7 @@ export default function StudentsListPage() {
                           sx={{ borderRadius: '6px', fontWeight: 500, fontSize: '0.72rem', bgcolor: 'rgba(79,110,247,0.08)', color: '#4f6ef7' }}
                         />
                       </TableCell>
-                      <TableCell>
-                        <Typography variant="caption" fontFamily="monospace" color="text.secondary">
-                          {student.internalStudentCode}
-                        </Typography>
-                      </TableCell>
+                     
                       <TableCell>
                         <StatusChip status={student.status} />
                       </TableCell>

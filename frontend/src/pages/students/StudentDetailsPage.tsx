@@ -5,7 +5,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import FingerprintIcon from '@mui/icons-material/Fingerprint';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PhoneIcon from '@mui/icons-material/Phone';
-import QrCode2Icon from '@mui/icons-material/QrCode2';
 import SchoolIcon from '@mui/icons-material/School';
 import { PageHeader } from '../../components/common/PageHeader';
 import { ErrorState, LoadingState } from '../../components/common/StateViews';
@@ -107,53 +106,6 @@ export default function StudentDetailsPage() {
             sx={{ borderRadius: '6px', fontWeight: 500, bgcolor: 'rgba(79,110,247,0.08)', color: '#4f6ef7' }}
           />
 
-          <Divider sx={{ my: 3 }} />
-
-          <Stack direction="row" alignItems="center" justifyContent="center" spacing={1} mb={1.5}>
-            <QrCode2Icon fontSize="small" sx={{ color: 'text.secondary' }} />
-            <Typography variant="caption" color="text.secondary" fontWeight={600} textTransform="uppercase">
-              QR Code Value
-            </Typography>
-          </Stack>
-          <Box
-            sx={{
-              border: '1px solid',
-              borderColor: 'divider',
-              bgcolor: '#fff',
-              borderRadius: 2,
-              p: 1.5,
-              wordBreak: 'break-all',
-              fontFamily: 'monospace',
-              fontSize: '0.78rem',
-            }}
-          >
-            {student.qrCode}
-          </Box>
-
-          <Divider sx={{ my: 3 }} />
-
-          <Stack direction="row" alignItems="center" justifyContent="center" spacing={1} mb={1}>
-            <FingerprintIcon fontSize="small" sx={{ color: 'text.secondary' }} />
-            <Typography variant="caption" color="text.secondary" fontWeight={600} textTransform="uppercase">
-              Student Code
-            </Typography>
-          </Stack>
-          <Box
-            sx={{
-              bgcolor: 'grey.50',
-              border: '1px solid',
-              borderColor: 'divider',
-              borderRadius: 1.5,
-              px: 2,
-              py: 1,
-              fontFamily: 'monospace',
-              fontSize: '1rem',
-              fontWeight: 700,
-              color: 'text.primary',
-            }}
-          >
-            {student.internalStudentCode}
-          </Box>
           </Paper>
 
           <StudentQRCode studentId={student.id} studentName={student.fullName} qrCode={student.qrCode} />
