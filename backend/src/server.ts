@@ -51,9 +51,6 @@ async function bootstrap() {
     await mongoose.connect(env.MONGODB_URI);
 
     await seedStages();
-
-    const app = createApp();
-
 }
 
-bootstrap();
+void bootstrap();

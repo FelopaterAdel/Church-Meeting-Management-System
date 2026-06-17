@@ -47,6 +47,16 @@ export const getStudentQrData = async (req: Request, res: Response): Promise<voi
   });
 };
 
+export const getStudentQrImage = async (req: Request, res: Response): Promise<void> => {
+  const { qrImage } = await studentService.getStudentQrImage(getStudentId(req));
+
+  sendSuccess(res, {
+    statusCode: StatusCodes.OK,
+    message: 'Student QR image generated successfully',
+    data: { qrImage }
+  });
+};
+
 export const resolveStudentByQrCode = async (req: Request, res: Response): Promise<void> => {
   const qrData = await studentService.resolveStudentByQrCode(req.params.qrCode as string);
 

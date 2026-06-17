@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import {
   Alert,
@@ -8,6 +8,7 @@ import {
   Chip,
   Divider,
   Paper,
+  Snackbar,
   Stack,
   Table,
   TableBody,
@@ -28,6 +29,7 @@ import MainLayout from '../../components/Layout/MainLayout';
 import { PageHeader } from '../../components/common/PageHeader';
 import { ErrorState, LoadingState } from '../../components/common/StateViews';
 import { MeetingForm } from '../../components/meetings/MeetingForm';
+import { QRCodeScanner } from '../../components/meetings/QRCodeScanner';
 import { useMeetingAttendance, useManualAttendance, useQrAttendance } from '../../hooks/useAttendance';
 import { useCloseMeeting, useMeeting, useReopenMeeting, useUpdateMeeting } from '../../hooks/useMeetings';
 import { useStages } from '../../hooks/useStages';
@@ -53,14 +55,36 @@ const toApiDate = (value: string) => new Date(value).toISOString();
 
 const statusColor = (status: Attendance['status']) => (status === 'PRESENT' ? 'success' : 'warning');
 
+const getErrorMessage = (error: unknown, fallback: string) => {
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    'response' in error &&
+    typeof error.response === 'object' &&
+    error.response !== null &&
+    'data' in error.response &&
+    typeof error.response.data === 'object' &&
+    error.response.data !== null &&
+    'message' in error.response.data &&
+    typeof error.response.data.message === 'string'
+  ) {
+    return error.response.data.message;
+  }
+
+  if (error instanceof Error) return error.message;
+  return fallback;
+};
+
 export default function MeetingDetailsPage() {
   const { id = '' } = useParams();
   const [attendancePage, setAttendancePage] = useState(0);
   const [attendanceLimit, setAttendanceLimit] = useState(10);
   const [qrCode, setQrCode] = useState('');
+  const [scannerOpen, setScannerOpen] = useState(false);
   const [studentSearch, setStudentSearch] = useState('');
   const [selectedStudent, setSelectedStudent] = useState<StudentLookupItem | null>(null);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [snackbar, setSnackbar] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [editError, setEditError] = useState<string | null>(null);
 
   const debouncedStudentSearch = useDebounce(studentSearch, 300);
@@ -128,13 +152,22 @@ export default function MeetingDetailsPage() {
     if (!qrCode.trim()) return;
     setFeedback(null);
     try {
-      await qrAttendance.mutateAsync(qrCode.trim());
+      const attendance = await qrAttendance.mutateAsync(qrCode.trim());
       setQrCode('');
-      setFeedback({ type: 'success', message: 'QR attendance recorded.' });
+      setFeedback({ type: 'success', message: `${attendance.student.fullName} marked present.` });
     } catch (err) {
-      setFeedback({ type: 'error', message: err instanceof Error ? err.message : 'Failed to record QR attendance.' });
+      setFeedback({ type: 'error', message: getErrorMessage(err, 'Failed to record QR attendance.') });
     }
   };
+
+  const handleScannedQr = useCallback(async (scannedQrCode: string) => {
+    try {
+      const attendance = await qrAttendance.mutateAsync(scannedQrCode);
+      setSnackbar({ type: 'success', message: `${attendance.student.fullName} marked present.` });
+    } catch (err) {
+      setSnackbar({ type: 'error', message: getErrorMessage(err, 'Failed to record scanned QR attendance.') });
+    }
+  }, [qrAttendance]);
 
   const handleManualSubmit = async () => {
     if (!selectedStudent) return;
@@ -145,7 +178,7 @@ export default function MeetingDetailsPage() {
       setStudentSearch('');
       setFeedback({ type: 'success', message: 'Manual attendance recorded.' });
     } catch (err) {
-      setFeedback({ type: 'error', message: err instanceof Error ? err.message : 'Failed to record manual attendance.' });
+      setFeedback({ type: 'error', message: getErrorMessage(err, 'Failed to record manual attendance.') });
     }
   };
 
@@ -164,7 +197,6 @@ export default function MeetingDetailsPage() {
       </MainLayout>
     );
   }
-console.log(attendanceData?.attendance);
   return (
  <MainLayout title={meeting.meetingName}>
       <PageHeader
@@ -209,6 +241,27 @@ console.log(attendanceData?.attendance);
         </Alert>
       )}
 
+      <QRCodeScanner
+        open={scannerOpen}
+        disabled={!meetingIsOpen}
+        loading={qrAttendance.isPending}
+        onClose={() => setScannerOpen(false)}
+        onScan={handleScannedQr}
+      />
+
+      <Snackbar
+        open={!!snackbar}
+        autoHideDuration={3500}
+        onClose={() => setSnackbar(null)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        {snackbar ? (
+          <Alert severity={snackbar.type} variant="filled" onClose={() => setSnackbar(null)}>
+            {snackbar.message}
+          </Alert>
+        ) : undefined}
+      </Snackbar>
+
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: '1fr 1.35fr' }, gap: 3 }}>
         <Stack spacing={3}>
           <Paper variant="outlined" sx={{ borderRadius: 2, p: 3 }}>
@@ -242,6 +295,16 @@ console.log(attendanceData?.attendance);
                 QR Attendance
               </Typography>
               <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
+                <Button
+                  variant="contained"
+                  startIcon={<QrCodeScannerIcon />}
+                  onClick={() => setScannerOpen(true)}
+                  disabled={!meetingIsOpen || qrAttendance.isPending}
+                  disableElevation
+                  sx={{ minWidth: 150 }}
+                >
+                  Open Camera
+                </Button>
                 <TextField
                   label="Scan or paste QR value"
                   value={qrCode}

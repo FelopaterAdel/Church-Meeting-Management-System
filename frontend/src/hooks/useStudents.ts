@@ -23,6 +23,13 @@ export const useStudent = (id: string) =>
     enabled: !!id,
   });
 
+export const useStudentQRCode = (id: string) =>
+  useQuery({
+    queryKey: [STUDENTS_QUERY_KEY, id, 'qrcode'],
+    queryFn: () => studentsApi.getQRCode(id),
+    enabled: !!id,
+  });
+
 export const useCreateStudent = () => {
   const qc = useQueryClient();
   return useMutation({

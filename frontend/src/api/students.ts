@@ -2,6 +2,7 @@ import apiClient from './client';
 import type {
   Student,
   StudentFormData,
+  StudentQRCodeResponse,
   StudentsListParams,
   StudentsListResponse,
 } from '../types/student';
@@ -32,6 +33,11 @@ export const studentsApi = {
   getById: async (id: string): Promise<Student> => {
     const { data } = await apiClient.get<ApiEnvelope<{ student: Student }>>(`/students/${id}`);
     return data.data.student;
+  },
+
+  getQRCode: async (id: string): Promise<StudentQRCodeResponse> => {
+    const { data } = await apiClient.get<ApiEnvelope<StudentQRCodeResponse>>(`/students/${id}/qrcode`);
+    return data.data;
   },
 
   create: async (payload: StudentFormData): Promise<Student> => {

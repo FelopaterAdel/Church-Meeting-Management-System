@@ -1,7 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
 import { Types, type FilterQuery } from 'mongoose';
 import { AppError } from '../../utils/app-error.util.js';
-import { generateStudentQrValue } from '../../utils/qr-code.util.js';
+import { generateQrImageDataUrl, generateStudentQrValue } from '../../utils/qr-code.util.js';
 import { StageModel } from '../stages/stage.model.js';
 import { StudentModel, type Student, type StudentDocument } from './student.model.js';
 import type { CreateStudentInput, ListStudentsQuery, UpdateStudentInput } from './student.validation.js';
@@ -43,6 +43,10 @@ export type StudentQrData = {
   stageId: string;
   status: Student['status'];
   qrCode: string;
+};
+
+export type StudentQrImage = {
+  qrImage: string;
 };
 
 const escapeRegex = (value: string): string => {
@@ -238,6 +242,18 @@ export const getStudentQrData = async (studentId: string): Promise<StudentQrData
   }
 
   return toStudentQrData(student);
+};
+
+export const getStudentQrImage = async (studentId: string): Promise<StudentQrImage> => {
+  const student = await StudentModel.findOne({ _id: studentId, isDeleted: false }).select('qrCode');
+
+  if (!student) {
+    throw new AppError('Student was not found', StatusCodes.NOT_FOUND);
+  }
+
+  return {
+    qrImage: await generateQrImageDataUrl(student.qrCode)
+  };
 };
 
 export const resolveStudentByQrCode = async (qrCode: string): Promise<StudentQrData> => {

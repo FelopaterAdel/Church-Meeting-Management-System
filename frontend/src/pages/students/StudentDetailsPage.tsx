@@ -10,6 +10,7 @@ import SchoolIcon from '@mui/icons-material/School';
 import { PageHeader } from '../../components/common/PageHeader';
 import { ErrorState, LoadingState } from '../../components/common/StateViews';
 import { StatusChip } from '../../components/common/StatusChip';
+import { StudentQRCode } from '../../components/students/StudentQRCode';
 import { useStages } from '../../hooks/useStages';
 import { useStudent } from '../../hooks/useStudents';
 import MainLayout from '../../components/Layout/MainLayout';
@@ -69,16 +70,17 @@ export default function StudentDetailsPage() {
     <Box>              
           
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 2fr' }, gap: 3 }}>
-        <Paper
-          variant="outlined"
-          sx={{
-            p: 3,
-            borderRadius: 2,
-            textAlign: 'center',
-            background: 'linear-gradient(160deg, rgba(79,110,247,0.04) 0%, rgba(255,255,255,0) 60%)',
-          }}
-        >
-          <Avatar
+        <Stack spacing={3}>
+          <Paper
+            variant="outlined"
+            sx={{
+              p: 3,
+              borderRadius: 2,
+              textAlign: 'center',
+              background: 'linear-gradient(160deg, rgba(79,110,247,0.04) 0%, rgba(255,255,255,0) 60%)',
+            }}
+          >
+            <Avatar
             sx={{
               width: 80,
               height: 80,
@@ -152,7 +154,10 @@ export default function StudentDetailsPage() {
           >
             {student.internalStudentCode}
           </Box>
-        </Paper>
+          </Paper>
+
+          <StudentQRCode studentId={student.id} studentName={student.fullName} qrCode={student.qrCode} />
+        </Stack>
 
         <Paper variant="outlined" sx={{ p: 3, borderRadius: 2 }}>
           <Typography variant="subtitle2" fontWeight={700} color="text.secondary" mb={3} textTransform="uppercase">

@@ -16,6 +16,10 @@ export interface Student {
   updatedAt: string;
 }
 
+export interface StudentQRCodeResponse {
+  qrImage: string;
+}
+
 export interface StudentFormData {
   fullName: string;
   phoneNumber: string;

@@ -15,6 +15,11 @@ export const attendanceRoutes = Router();
 attendanceRoutes.use(authenticate);
 
 attendanceRoutes.post(
+  '/scan',
+  validateRequest(qrAttendanceSchema),
+  asyncHandler(attendanceController.markAttendanceByQrCode)
+);
+attendanceRoutes.post(
   '/qr',
   validateRequest(qrAttendanceSchema),
   asyncHandler(attendanceController.markAttendanceByQrCode)

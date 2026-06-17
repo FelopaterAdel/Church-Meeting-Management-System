@@ -4,7 +4,7 @@ import type { ApiEnvelope, ApiPaginationMeta } from '../types/api';
 
 export const attendanceApi = {
   markByQr: async (payload: { meetingId: string; qrCode: string }): Promise<Attendance> => {
-    const { data } = await apiClient.post<ApiEnvelope<{ attendance: Attendance }>>('/attendance/qr', payload);
+    const { data } = await apiClient.post<ApiEnvelope<{ attendance: Attendance }>>('/attendance/scan', payload);
     return data.data.attendance;
   },
 
