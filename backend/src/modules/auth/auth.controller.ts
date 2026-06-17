@@ -31,6 +31,16 @@ export const logout = async (_req: Request, res: Response): Promise<void> => {
   });
 };
 
+export const refreshToken = async (req: Request, res: Response): Promise<void> => {
+  const result = await authService.refreshToken(req.body);
+
+  sendSuccess(res, {
+    statusCode: StatusCodes.OK,
+    message: 'Token refreshed successfully',
+    data: result
+  });
+};
+
 export const getMe = async (req: Request, res: Response): Promise<void> => {
   const user = await authService.getAuthenticatedUser(req.user!.id);
 

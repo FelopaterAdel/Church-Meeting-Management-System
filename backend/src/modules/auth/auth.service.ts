@@ -2,13 +2,19 @@ import { StatusCodes } from 'http-status-codes';
 import { UserModel, type UserDocument } from '../users/user.model.js';
 import { AppError } from '../../utils/app-error.util.js';
 import { hashPassword, verifyPassword } from '../../utils/password.util.js';
-import { signAccessToken } from '../../utils/token.util.js';
+import { signAccessToken, signRefreshToken, verifyRefreshToken } from '../../utils/token.util.js';
 import { toPublicUser, type PublicUser } from '../users/user.service.js';
-import type { LoginInput, RegisterServantInput } from './auth.validation.js';
+import type { LoginInput, RefreshTokenInput, RegisterServantInput } from './auth.validation.js';
 
 type AuthResult = {
   user: PublicUser;
   accessToken: string;
+  refreshToken: string;
+};
+
+type RefreshResult = {
+  accessToken: string;
+  refreshToken: string;
 };
 
 const assertCanLogin = (user: UserDocument): void => {
@@ -63,10 +69,42 @@ export const login = async (input: LoginInput): Promise<AuthResult> => {
     sub: user.id,
     role: user.role
   });
+  const refreshToken = signRefreshToken({
+    sub: user.id
+  });
 
   return {
     user: toPublicUser(user),
-    accessToken
+    accessToken,
+    refreshToken
+  };
+};
+
+export const refreshToken = async (input: RefreshTokenInput): Promise<RefreshResult> => {
+  let payload: { sub: string };
+
+  try {
+    payload = verifyRefreshToken(input.refreshToken);
+  } catch {
+    throw new AppError('Refresh token is invalid or expired', StatusCodes.UNAUTHORIZED);
+  }
+
+  const user = await UserModel.findById(payload.sub);
+
+  if (!user) {
+    throw new AppError('Refresh token is invalid', StatusCodes.UNAUTHORIZED);
+  }
+
+  assertCanLogin(user);
+
+  return {
+    accessToken: signAccessToken({
+      sub: user.id,
+      role: user.role
+    }),
+    refreshToken: signRefreshToken({
+      sub: user.id
+    })
   };
 };
 
