@@ -28,7 +28,7 @@ export const MainLayout = ({ children, title }: MainLayoutProps) => {
       <Header onMenuClick={handleMenuClick} title={title} />
       
       <Box sx={{ display: 'flex', flex: 1 }}>
-        <Sidebar open={sidebarOpen && !isMobile} onClose={handleCloseSidebar} />
+        <Sidebar open={sidebarOpen} onClose={handleCloseSidebar} />
         
         <Box
           component="main"
