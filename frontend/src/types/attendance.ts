@@ -4,7 +4,10 @@ export type AttendanceMethod = 'QR' | 'MANUAL' | 'SYSTEM';
 export interface Attendance {
   id: string;
   meetingId: string;
-  studentId: string;
+  student: {
+   id: string,
+   fullName: string
+  },
   status: AttendanceStatus;
   method: AttendanceMethod;
   attendedAt: string;

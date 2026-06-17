@@ -24,7 +24,10 @@ type PaginationMeta = {
 export type PublicAttendance = {
   id: string;
   meetingId: string;
-  studentId: string;
+  student: {
+    id: string,
+    fullName: string
+  },
   status: AttendanceStatus;
   method: AttendanceMethod;
   attendedAt: Date;
@@ -38,10 +41,27 @@ type PaginatedAttendance = {
   pagination: PaginationMeta;
 };
 
+type PopulatedStudent = {
+  _id: Types.ObjectId;
+  fullName: string;
+};
+
+const isPopulatedStudent = (student: Types.ObjectId | PopulatedStudent): student is PopulatedStudent => {
+  return 'fullName' in student;
+};
+
 const toPublicAttendance = (attendance: AttendanceDocument): PublicAttendance => ({
   id: attendance.id,
   meetingId: attendance.meeting.toString(),
-  studentId: attendance.student.toString(),
+  student: isPopulatedStudent(attendance.student)
+    ? {
+        id: attendance.student._id.toString(),
+        fullName: attendance.student.fullName
+      }
+    : {
+        id: attendance.student.toString(),
+        fullName: ''
+      },
   status: attendance.status,
   method: attendance.method,
   attendedAt: attendance.attendedAt,
@@ -122,6 +142,8 @@ const createAttendance = async (
     throw error;
   }
 
+  await attendance.populate('student', 'fullName');
+
   return toPublicAttendance(attendance);
 };
 
@@ -143,10 +165,7 @@ export const markManualAttendance = async (
   return createAttendance(input.meetingId, student, 'MANUAL', recordedBy);
 };
 
-export const listStudentAttendance = async (
-  studentId: string,
-  query: ListAttendanceQuery
-): Promise<PaginatedAttendance> => {
+export const listStudentAttendance = async (studentId: string, query: ListAttendanceQuery): Promise<PaginatedAttendance> => {
   await getActiveStudentById(studentId);
 
   const page = query.page;
@@ -157,7 +176,7 @@ export const listStudentAttendance = async (
   };
 
   const [attendance, total] = await Promise.all([
-    AttendanceModel.find(filter).sort({ attendedAt: -1, createdAt: -1 }).skip(skip).limit(limit),
+    AttendanceModel.find(filter).populate('student', 'fullName').sort({ attendedAt: -1, createdAt: -1 }).skip(skip).limit(limit),
     AttendanceModel.countDocuments(filter)
   ]);
 
@@ -193,12 +212,16 @@ export const listMeetingAttendance = async (
     meeting: new Types.ObjectId(meetingId)
   };
 
-  const [attendance, total] = await Promise.all([
-    AttendanceModel.find(filter).sort({ attendedAt: -1, createdAt: -1 }).skip(skip).limit(limit),
-    AttendanceModel.countDocuments(filter)
-  ]);
+const [attendance, total] = await Promise.all([
+  AttendanceModel.find(filter)
+    .populate('student', 'fullName')
+    .sort({ attendedAt: -1, createdAt: -1 })
+    .skip(skip)
+    .limit(limit),
+  AttendanceModel.countDocuments(filter)
+]);   
 
-  const totalPages = Math.ceil(total / limit);
+const totalPages = Math.ceil(total / limit);
 
   return {
     attendance: attendance.map(toPublicAttendance),

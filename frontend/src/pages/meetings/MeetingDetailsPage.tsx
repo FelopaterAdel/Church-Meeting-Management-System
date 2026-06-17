@@ -164,9 +164,9 @@ export default function MeetingDetailsPage() {
       </MainLayout>
     );
   }
-
+console.log(attendanceData?.attendance);
   return (
-    <MainLayout title={meeting.meetingName}>
+ <MainLayout title={meeting.meetingName}>
       <PageHeader
         title={meeting.meetingName}
         subtitle={`${formatDate(meeting.date)} - ${stageById.get(meeting.stageId) ?? meeting.stageId}`}
@@ -331,10 +331,10 @@ export default function MeetingDetailsPage() {
                 <Table size="small">
                   <TableHead>
                     <TableRow sx={{ bgcolor: 'grey.50' }}>
-                      <TableCell sx={{ fontWeight: 700 }}>Student ID</TableCell>
-                      <TableCell sx={{ fontWeight: 700 }}>Status</TableCell>
+                      <TableCell sx={{ fontWeight: 700 }}>الحالة</TableCell>
                       <TableCell sx={{ fontWeight: 700 }}>Method</TableCell>
-                      <TableCell sx={{ fontWeight: 700 }}>Timestamp</TableCell>
+                      <TableCell sx={{ fontWeight: 700 }}>الوقت والتاريخ </TableCell>
+                      <TableCell sx={{ fontWeight: 700 }}>الاسم</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -348,11 +348,6 @@ export default function MeetingDetailsPage() {
                       attendanceData?.attendance.map((record) => (
                         <TableRow key={record.id}>
                           <TableCell>
-                            <Typography variant="caption" fontFamily="monospace">
-                              {record.studentId}
-                            </Typography>
-                          </TableCell>
-                          <TableCell>
                             <Chip
                               label={record.status}
                               color={statusColor(record.status)}
@@ -362,7 +357,14 @@ export default function MeetingDetailsPage() {
                           </TableCell>
                           <TableCell>{record.method}</TableCell>
                           <TableCell>{formatDate(record.attendedAt)}</TableCell>
+                          <TableCell>
+                            <Typography variant="caption" fontFamily="monospace" fontSize={20}>
+                              {record.student.fullName}
+                            </Typography>
+                          </TableCell>
                         </TableRow>
+
+                        
                       ))
                     )}
                   </TableBody>
