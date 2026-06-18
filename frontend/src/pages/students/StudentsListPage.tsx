@@ -78,7 +78,7 @@ export default function StudentsListPage() {
   };
 
   return (
-    <MainLayout title="Meetings">
+    <MainLayout title="Students List">
           <PageHeader
             title="Students"
             subtitle={data ? `${data.pagination.total} students registered` : undefined}
