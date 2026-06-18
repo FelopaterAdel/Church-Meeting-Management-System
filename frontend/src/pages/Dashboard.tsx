@@ -43,7 +43,7 @@ export const Dashboard = () => {
   const widgets = statistics
     ? [
         {
-          label: 'عدد المخدومين',
+          label: 'عدد الكلي ',
           value: statistics.totalStudents.toLocaleString(),
           helper: `${statistics.totalActiveStudents.toLocaleString()} active`,
           icon: <GroupsIcon />,
@@ -58,7 +58,7 @@ export const Dashboard = () => {
           progress: statistics.attendancePercentage,
         },
         {
-          label: 'عدد الححضور',
+          label: 'عدد الحضور',
           value: statistics.presentCount.toLocaleString(),
           helper: 'Recorded attendance',
           icon: <HowToRegIcon />,
