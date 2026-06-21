@@ -209,9 +209,7 @@ const RankingPanel = ({ title, subtitle, students, loading, emptyText, tone }: R
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     {student.fullName}
                   </Typography>
-                  <Typography variant="caption" color="text.secondary" sx={{ fontFamily: 'monospace' }}>
-                    {student.internalStudentCode || student.fullName}
-                  </Typography>
+                 
                 </TableCell>
                 
               </TableRow>

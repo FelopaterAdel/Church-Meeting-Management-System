@@ -10,7 +10,6 @@ export interface DashboardStatistics {
 export interface StudentRankingItem {
   studentId: string;
   fullName: string;
-  internalStudentCode: string;
   stageId: string;
   stageName: string | null;
   count: number;

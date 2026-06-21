@@ -19,7 +19,6 @@ type StudentRankingResult = {
   count: number;
   student?: {
     fullName: string;
-    internalStudentCode: string;
     stage: Types.ObjectId;
   };
   stage?: Array<{
@@ -188,7 +187,6 @@ const getStudentRankingReport = async (
   Array<{
     studentId: string;
     fullName: string;
-    internalStudentCode: string;
     stageId: string;
     stageName: string | null;
     count: number;
@@ -244,7 +242,6 @@ const getStudentRankingReport = async (
     return {
       studentId: item._id.toString(),
       fullName: student?.fullName ?? 'Unknown Student',
-      internalStudentCode: student?.internalStudentCode ?? '',
       stageId: student?.stage?.toString() ?? '',
       stageName: stage?.name ?? null,
       count: item.count
@@ -256,7 +253,6 @@ export const getMostActiveStudents = async (query: StudentRankingReportQuery): P
   Array<{
     studentId: string;
     fullName: string;
-    internalStudentCode: string;
     stageId: string;
     stageName: string | null;
     count: number;
@@ -269,7 +265,6 @@ export const getMostAbsentStudents = async (query: StudentRankingReportQuery): P
   Array<{
     studentId: string;
     fullName: string;
-    internalStudentCode: string;
     stageId: string;
     stageName: string | null;
     count: number;

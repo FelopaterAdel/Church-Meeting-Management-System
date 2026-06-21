@@ -4,7 +4,6 @@ import type { ApiEnvelope, ApiPaginationMeta } from '../types/api';
 export interface StudentLookupItem {
   id: string;
   fullName: string;
-  internalStudentCode: string;
   stageId: string;
   status: 'ACTIVE' | 'INACTIVE';
 }

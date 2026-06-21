@@ -10,7 +10,6 @@ export interface Student {
   longitude?: number;
   stageId: string;
   qrCode: string;
-  internalStudentCode: string;
   status: StudentStatus;
   createdAt: string;
   updatedAt: string;
@@ -28,7 +27,6 @@ export interface StudentFormData {
   latitude: number | null;
   longitude: number | null;
   stageId: string;
-  internalStudentCode: string;
   status: StudentStatus;
 }
 

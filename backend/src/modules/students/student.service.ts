@@ -25,7 +25,6 @@ export type PublicStudent = {
   longitude?: number;
   stageId: string;
   qrCode: string;
-  internalStudentCode: string;
   status: Student['status'];
   createdAt: Date;
   updatedAt: Date;
@@ -38,7 +37,6 @@ type PaginatedStudents = {
 
 export type StudentQrData = {
   studentId: string;
-  internalStudentCode: string;
   fullName: string;
   stageId: string;
   status: Student['status'];
@@ -62,7 +60,6 @@ const toPublicStudent = (student: StudentDocument): PublicStudent => {
     address: student.address,
     stageId: student.stage.toString(),
     qrCode: student.qrCode,
-    internalStudentCode: student.internalStudentCode,
     status: student.status,
     createdAt: student.createdAt,
     updatedAt: student.updatedAt
@@ -81,7 +78,6 @@ const toPublicStudent = (student: StudentDocument): PublicStudent => {
 
 const toStudentQrData = (student: StudentDocument): StudentQrData => ({
   studentId: student.id,
-  internalStudentCode: student.internalStudentCode,
   fullName: student.fullName,
   stageId: student.stage.toString(),
   status: student.status,
@@ -96,16 +92,7 @@ const assertStageExists = async (stageId: string): Promise<void> => {
   }
 };
 
-const assertStudentCodeIsAvailable = async (internalStudentCode: string, excludeStudentId?: string): Promise<void> => {
-  const existingStudent = await StudentModel.findOne({
-    internalStudentCode,
-    ...(excludeStudentId ? { _id: { $ne: excludeStudentId } } : {})
-  });
 
-  if (existingStudent) {
-    throw new AppError('Internal student code already exists', StatusCodes.CONFLICT);
-  }
-};
 
 const generateUniqueStudentQrCode = async (): Promise<string> => {
   for (let attempt = 0; attempt < 5; attempt += 1) {
@@ -140,7 +127,6 @@ const buildStudentFilter = (query: ListStudentsQuery): FilterQuery<Student> => {
       { phoneNumber: searchRegex },
       { confessionFather: searchRegex },
       { address: searchRegex },
-      { internalStudentCode: searchRegex },
       { qrCode: searchRegex }
     ];
   }
@@ -186,7 +172,6 @@ export const getStudentById = async (studentId: string): Promise<PublicStudent> 
 
 export const createStudent = async (input: CreateStudentInput): Promise<PublicStudent> => {
   await assertStageExists(input.stageId);
-  await assertStudentCodeIsAvailable(input.internalStudentCode);
 
   const qrCode = await generateUniqueStudentQrCode();
 
@@ -194,7 +179,6 @@ export const createStudent = async (input: CreateStudentInput): Promise<PublicSt
     fullName: input.fullName,
     stage: input.stageId,
     qrCode,
-    internalStudentCode: input.internalStudentCode,
     status: input.status
   });
 
@@ -208,9 +192,6 @@ export const updateStudent = async (studentId: string, input: UpdateStudentInput
     throw new AppError('Student was not found', StatusCodes.NOT_FOUND);
   }
 
-  const nextInternalStudentCode = input.internalStudentCode ?? student.internalStudentCode;
-  await assertStudentCodeIsAvailable(nextInternalStudentCode, studentId);
-
   if (input.stageId) {
     await assertStageExists(input.stageId);
     student.stage = new Types.ObjectId(input.stageId);
@@ -218,11 +199,6 @@ export const updateStudent = async (studentId: string, input: UpdateStudentInput
 
   if (input.fullName !== undefined) {
     student.fullName = input.fullName;
-  }
-
-  
-  if (input.internalStudentCode !== undefined) {
-    student.internalStudentCode = input.internalStudentCode;
   }
 
   if (input.status !== undefined) {

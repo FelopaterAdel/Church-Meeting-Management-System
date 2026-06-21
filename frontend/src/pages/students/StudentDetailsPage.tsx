@@ -2,7 +2,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Avatar, Box, Button, Chip, Divider, Paper, Stack, Tooltip, Typography } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EditIcon from '@mui/icons-material/Edit';
-import FingerprintIcon from '@mui/icons-material/Fingerprint';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PhoneIcon from '@mui/icons-material/Phone';
 import SchoolIcon from '@mui/icons-material/School';
@@ -148,15 +147,7 @@ export default function StudentDetailsPage() {
                 />
               }
             />
-            <InfoRow
-              icon={<FingerprintIcon fontSize="small" />}
-              label="Student Code"
-              value={
-                <Typography component="span" fontFamily="monospace" variant="body2" fontWeight={600}>
-                  {student.internalStudentCode}
-                </Typography>
-              }
-            />
+            
           </Stack>
 
           {hasCoordinates && (

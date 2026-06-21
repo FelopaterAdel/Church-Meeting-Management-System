@@ -56,7 +56,6 @@ export default function EditStudentPage() {
             latitude: student.latitude ?? null,
             longitude: student.longitude ?? null,
             stageId: student.stageId,
-            internalStudentCode: student.internalStudentCode,
             status: student.status,
           }}
           onSubmit={handleSubmit}

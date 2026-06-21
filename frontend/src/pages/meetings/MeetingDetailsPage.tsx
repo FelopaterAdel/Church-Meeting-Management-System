@@ -344,7 +344,7 @@ export default function MeetingDetailsPage() {
                 inputValue={studentSearch}
                 onInputChange={(_, value) => setStudentSearch(value)}
                 options={studentOptions?.students ?? []}
-                getOptionLabel={(option) => `${option.fullName} (${option.internalStudentCode})`}
+                getOptionLabel={(option) => `${option.fullName}`}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
                 disabled={!meetingIsOpen || manualAttendance.isPending}
                 renderInput={(params) => <TextField {...params} label="Search active students in this stage" />}

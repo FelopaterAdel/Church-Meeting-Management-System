@@ -3,13 +3,6 @@ import { idParamSchema, objectIdSchema, paginationQuerySchema } from '../../vali
 import { STUDENT_STATUSES } from './student.model.js';
 
 
-const internalStudentCodeSchema = z
-  .string()
-  .trim()
-  .min(2)
-  .max(50)
-  .regex(/^[a-zA-Z0-9_-]+$/, 'Internal student code can only contain letters, numbers, underscores, and hyphens')
-  .transform((value) => value.toUpperCase());
 
 export const listStudentsSchema = z.object({
   query: paginationQuerySchema.extend({
@@ -22,7 +15,6 @@ export const createStudentSchema = z.object({
   body: z.object({
     fullName: z.string().trim().min(2).max(120),
     stageId: objectIdSchema,
-    internalStudentCode: internalStudentCodeSchema,
     status: z.enum(STUDENT_STATUSES).default('ACTIVE')
   })
 });
@@ -33,7 +25,6 @@ export const updateStudentSchema = z.object({
     .object({
       fullName: z.string().trim().min(2).max(120).optional(),
       stageId: objectIdSchema.optional(),
-      internalStudentCode: internalStudentCodeSchema.optional(),
       status: z.enum(STUDENT_STATUSES).optional()
     })
     .refine((body) => Object.keys(body).length > 0, {
